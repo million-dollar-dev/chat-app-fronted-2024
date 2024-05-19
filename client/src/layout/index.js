@@ -1,6 +1,6 @@
 import React from 'react';
 
-import logo from '../Image/logo.png'
+import logo from '../assets/logo.png'
 const AuthLayouts = ({children}) => {
     return(
         <>
