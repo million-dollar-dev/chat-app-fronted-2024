@@ -7,18 +7,25 @@ const RegisterPage = () => {
     password: "",
     profile_pic: ""
   });
+  const [uploadPhoto, setUploadPhoto] = useState("");
 
   const handleOnChange = (e) => {
-    const {name, value} = e.target
+    const {name, value} = e.target;
 
     setData((preve) => {
       return {
         ...preve,
         [name]: value
-      }
+      };
     });
   };
 
+  const handleUploadChange = (e) => {
+    const file = e.target.files[0];
+
+    setUploadPhoto(file);
+  }
+  console.log('uploadPhoto', uploadPhoto)
   return (
     <div className='mt-5'>
       <div className='bg-white w-full max-w-sm mx-2 rounded overflow-hidden p-4'>
@@ -68,7 +75,11 @@ const RegisterPage = () => {
           <div className="flex flex-col gap-1">
             <label htmlFor='profile_pic'>Photo :
             <div className="h-14 bg-slate-200 flex justify-center items-center border rounded hover:border-primary cursor-pointer">
-              <p>Upload profile photo</p>
+              <p className='text-sm'>
+                {
+                  uploadPhoto.name ? uploadPhoto?.name : "Upload profile photo"
+                }
+              </p>
             </div>
             </label>
             <input
@@ -76,6 +87,7 @@ const RegisterPage = () => {
                 id='profile_pic'
                 name='profile_pic'
                 className='bg-slate-100 px-2 py-1 focus:outline-primary hidden'
+                onChange={handleUploadChange}
             />
           </div>
         </form>
