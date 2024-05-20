@@ -5,7 +5,7 @@ import {Outlet} from "react-router-dom";
 function App() {
     return (
         <h1>
-            Hello world!
+            {/*Hello world!*/}
             <Outlet/>
         </h1>
 
