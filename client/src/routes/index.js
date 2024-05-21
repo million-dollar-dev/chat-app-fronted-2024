@@ -29,7 +29,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "",
-                element: <AuthLayouts><Home/></AuthLayouts>,
+                element: <Home/>,
                 children: [
                     {
                         path: ":userId",
