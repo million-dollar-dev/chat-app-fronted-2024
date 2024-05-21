@@ -4,11 +4,12 @@ import {FaUserPlus} from "react-icons/fa";
 import {NavLink} from "react-router-dom";
 import {BiLogOut} from "react-icons/bi";
 import Avatar from "./Avatar";
+import { FiArrowUpLeft } from "react-icons/fi";
 
 
 const Sidebar = () => {
     return (
-        <div className='w-full h-full'>
+        <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
             <div className='bg-slate-100 w-12 h-full rounded-tr-lg rounded-br-lg py-5 text-slate-600 flex flex-col justify-between'>
                 <div>
                     <NavLink
@@ -37,9 +38,24 @@ const Sidebar = () => {
                             <BiLogOut size={25}/>
                             </span>
                         </button>
-
                     </div>
-
+            </div>
+            <div className='w-full '>
+                <div className='h-16 flex items-center'>
+                    <h2 className='text-xl font-bold p-4 text-slate-800'>Message</h2>
+                </div>
+                <div className='bg-slate-200 p-[0.5px]'></div>
+                <div className=' h-[calc(100vh-65px)] overflow-x-hidden overflow-y-auto scrollbar'>
+                    <div className='mt-12'>
+                        <div className='flex justify-center items-center my-4 text-slate-500'>
+                            <FiArrowUpLeft
+                                size={50}
+                            />
+                        </div>
+                        <p className='text-lg text-center text-slate-400'>Explore users to start a conversation
+                            with.</p>
+                    </div>
+                </div>
             </div>
         </div>
     )
