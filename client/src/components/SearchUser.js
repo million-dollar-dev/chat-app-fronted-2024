@@ -5,7 +5,7 @@ import { IoClose } from "react-icons/io5";
 
 const SearchUser = () => {
     const [searchUser,setSearchUser] = useState([])
-    const [loading,setLoading] = useState(false)
+    const [loading,setLoading] = useState(true)
     return (
     <div className='fixed top-0 bottom-0 left-0 right-0 bg-slate-700 bg-opacity-40 p-2 z-10'>
         <div className='w-full max-w-lg mx-auto mt-10'>
@@ -28,6 +28,11 @@ const SearchUser = () => {
                 {
                     searchUser.length === 0 && !loading && (
                         <p className='text-center text-slate-500'>no user found!</p>
+                    )
+                }
+                {
+                    loading && (
+                        <p><Loading/></p>
                     )
                 }
             </div>
