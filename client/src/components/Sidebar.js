@@ -5,6 +5,7 @@ import {NavLink} from "react-router-dom";
 import {BiLogOut} from "react-icons/bi";
 import Avatar from "./Avatar";
 import { FiArrowUpLeft } from "react-icons/fi";
+import SearchUser from "./SearchUser";
 
 
 const Sidebar = () => {
@@ -57,6 +58,9 @@ const Sidebar = () => {
                     </div>
                 </div>
             </div>
+            {
+                <SearchUser/>
+            }
         </div>
     )
 }
