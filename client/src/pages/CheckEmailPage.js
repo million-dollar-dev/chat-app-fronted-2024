@@ -2,7 +2,7 @@ import React from 'react';
 
 const CheckEmailPage = () => {
   return (
-    <div>CheckEmailPage</div>
+    <h1>CheckEmailPage</h1>
   );
 };
 
