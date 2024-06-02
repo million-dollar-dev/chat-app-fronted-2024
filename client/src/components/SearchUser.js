@@ -2,10 +2,30 @@ import React, { useEffect, useState } from 'react'
 import { IoSearchOutline } from "react-icons/io5";
 import Loading from './Loading';
 import { IoClose } from "react-icons/io5";
+import UserSearchCard from './UserSearchCard';
 
-const SearchUser = () => {
+const SearchUser = ({onClose}) => {
     const [searchUser,setSearchUser] = useState([])
-    const [loading,setLoading] = useState(true)
+    const [loading,setLoading] = useState(false)
+    const [search,setSearch] = useState("")
+
+    const handleSearchUser = async()=>{
+        
+            setLoading(true)
+            
+            setLoading(false)
+
+            setSearchUser([
+                {name: "Thinh"},
+                {name: "Thuy"},
+                {name: "Tuan"}
+            ])
+    }
+
+    useEffect(()=>{
+        handleSearchUser()
+    },[search])
+
     return (
     <div className='fixed top-0 bottom-0 left-0 right-0 bg-slate-700 bg-opacity-40 p-2 z-10'>
         <div className='w-full max-w-lg mx-auto mt-10'>
@@ -35,10 +55,19 @@ const SearchUser = () => {
                         <p><Loading/></p>
                     )
                 }
+                {
+                    searchUser.length !==0 && !loading && (
+                        searchUser.map((user,index)=>{
+                            return(
+                                <UserSearchCard key={user._id} user={user} onClose={onClose}/>
+                            )
+                        })
+                    )
+                } 
             </div>
         </div>
 
-        <div className='absolute top-0 right-0 text-2xl p-2 lg:text-4xl hover:text-white'>
+        <div className='absolute top-0 right-0 text-2xl p-2 lg:text-4xl hover:text-white' onClick={onClose}>
             <button>
                 <IoClose/>
             </button>
