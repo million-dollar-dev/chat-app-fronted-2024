@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {IoChatbubbleEllipses} from "react-icons/io5";
 import {FaUserPlus} from "react-icons/fa";
 import {NavLink} from "react-router-dom";
@@ -9,6 +9,7 @@ import SearchUser from "./SearchUser";
 
 
 const Sidebar = () => {
+    const [openSearchUser,setOpenSearchUser] = useState(true)
     return (
         <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
             <div className='bg-slate-100 w-12 h-full rounded-tr-lg rounded-br-lg py-5 text-slate-600 flex flex-col justify-between'>
@@ -62,8 +63,11 @@ const Sidebar = () => {
                     </div>
                 </div>
             </div>
+            {/**search user */}
             {
-                <SearchUser/>
+                openSearchUser && (
+                    <SearchUser onClose={()=>setOpenSearchUser(false)}/>
+                )
             }
         </div>
     )
