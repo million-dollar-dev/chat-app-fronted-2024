@@ -9,7 +9,7 @@ import SearchUser from "./SearchUser";
 
 
 const Sidebar = () => {
-    const [openSearchUser,setOpenSearchUser] = useState(true)
+    const [openSearchUser,setOpenSearchUser] = useState(false)
     return (
         <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
             <div className='bg-slate-100 w-12 h-full rounded-tr-lg rounded-br-lg py-5 text-slate-600 flex flex-col justify-between'>
@@ -23,6 +23,7 @@ const Sidebar = () => {
                     </NavLink>
 
                     <div title='add friend'
+                        onClick={() => setOpenSearchUser(true)}
                         className='w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded'>
                         <FaUserPlus
                             size={25}

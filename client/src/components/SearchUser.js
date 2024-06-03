@@ -20,12 +20,15 @@ const SearchUser = ({onClose}) => {
                 {name: "Thuy"},
                 {name: "Tuan"}
             ])
+
+            console.log(search)
     }
 
     useEffect(()=>{
         handleSearchUser()
-    },[search])
+    }, [search])
 
+    
     return (
     <div className='fixed top-0 bottom-0 left-0 right-0 bg-slate-700 bg-opacity-40 p-2 z-10'>
         <div className='w-full max-w-lg mx-auto mt-10'>
@@ -35,7 +38,8 @@ const SearchUser = ({onClose}) => {
                     type='text'
                     placeholder='Search user by name, email....'
                     className='w-full outline-none py-1 h-full px-4'
-                
+                    onChange={(e)=>setSearch(e.target.value)}
+                    value={search}
                 />
                 <div className='h-14 w-14 flex justify-center items-center'>
                     <IoSearchOutline size={25}/>
