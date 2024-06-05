@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {createWebSocket} from "../services/websocket";
 import toast, {Toaster} from "react-hot-toast";
 
 const RegisterPage = () => {
+  const navigate = useNavigate()
+  const regexName = /^\S+$/;
   const [data, setData] = useState({
     name: "",
     password: "",
@@ -19,12 +21,24 @@ const RegisterPage = () => {
       setSocket(newSocket);
     }
   }
+  // useEffect(() => {
+  //   if (socket !== null) {
+  //     toast.success(' connected');
+  //   }
+  // }, [socket]);
+  const handleClickRegister = () => {
+    connectSocketTest()
+    // validate data
+    if (data.name === "" || data.password === "" || !regexName.test(data.name)) {
+      toast.error("username or password is not comfort")
+    } else {
+      toast.success("register is successfully")
+      setTimeout(() => {
+        navigate("/home")
+      }, 1000)
 
-  useEffect(() => {
-    if (socket) {
-      toast.success(' connected');
     }
-  }, [socket]);
+  }
 
   const handleOnChange = (e) => {
     const {name, value} = e.target;
@@ -48,7 +62,7 @@ const RegisterPage = () => {
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Welcome to Chat App!
         </h2>
-        <pre>{JSON.stringify(data, undefined, 2)}</pre>
+        {/*<pre>{JSON.stringify(data, undefined, 2)}</pre>*/}
         <div className="grid gap-4 mt-5">
           <div className="flex flex-col gap-1">
             <label htmlFor='name'>Name :</label>
@@ -77,12 +91,12 @@ const RegisterPage = () => {
             />
           </div>
           <button className='bg-primary text-lg px-4 py-1 hover:bg-secondary rounded mt-2 text-white leading-relaxed tracking-wide'
-                  onClick={connectSocketTest}
+                  onClick={handleClickRegister}
           >
             Register
           </button>
         </div>
-        <p className='my-3 text-center'>Already have account ? <Link to={"/email"} className='hover:text-primary font-semibold'>Login</Link></p>
+        <p className='my-3 text-center'>Already have account ? <Link to={"/home"} className='hover:text-primary font-semibold'>Login</Link></p>
       </div>
     </div>
   );
