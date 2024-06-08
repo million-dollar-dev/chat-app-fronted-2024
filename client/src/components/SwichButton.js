@@ -15,7 +15,7 @@ const SwitchButton = ({ onToggle, initialState = false }) => {
             onClick={toggleSwitch}
         >
             <div
-                className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${isOn ? 'translate-x-6' : ''}`}
+                className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${isOn ? 'translate-x-5' : ''}`}
             ></div>
         </div>
     );
