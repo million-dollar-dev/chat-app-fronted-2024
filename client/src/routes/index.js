@@ -6,6 +6,7 @@ import App from "../App";
 import Home from "../pages/Home";
 import MessagePage from "../components/MessagePage";
 import AuthLayouts from "../layout/AuthLayout";
+import LoginPage from "../pages/LoginPage";
 
 const router = createBrowserRouter([
     {
@@ -31,6 +32,13 @@ const router = createBrowserRouter([
                 element:
                     <AuthLayouts>
                         <CheckPasswordPage/>
+                    </AuthLayouts>
+            },
+            {
+                path: "login",
+                element:
+                    <AuthLayouts>
+                        <LoginPage/>
                     </AuthLayouts>
             },
             {

@@ -96,7 +96,7 @@ const RegisterPage = () => {
             Register
           </button>
         </div>
-        <p className='my-3 text-center'>Already have account ? <Link to={"/home"} className='hover:text-primary font-semibold'>Login</Link></p>
+        <p className='my-3 text-center'>Already have account ? <Link to={"/login"} className='hover:text-primary font-semibold'>Login</Link></p>
       </div>
     </div>
   );
