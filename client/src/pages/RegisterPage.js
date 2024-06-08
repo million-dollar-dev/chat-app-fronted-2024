@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {createWebSocket} from "../services/websocket";
 import toast, {Toaster} from "react-hot-toast";
+import SwichButton from "../components/SwichButton";
 
 const RegisterPage = () => {
   const navigate = useNavigate()
@@ -10,6 +11,11 @@ const RegisterPage = () => {
     name: "",
     password: "",
   });
+  //switch button
+  const [switchState, setSwitchState] = useState(false);
+  const handleToggle = (newState) => {
+    setSwitchState(newState);
+  };
 
   const [socket, setSocket] = useState(null);
   const connectSocketTest = () => {
@@ -97,6 +103,9 @@ const RegisterPage = () => {
           </button>
         </div>
         <p className='my-3 text-center'>Already have account ? <Link to={"/login"} className='hover:text-primary font-semibold'>Login</Link></p>
+        {/* tag switchButton*/}
+        <SwichButton onToggle={handleToggle} initialState={switchState} />
+
       </div>
     </div>
   );
