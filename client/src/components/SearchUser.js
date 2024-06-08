@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { IoSearchOutline } from "react-icons/io5";
 import Loading from './Loading';
 import { IoClose } from "react-icons/io5";
@@ -8,6 +8,7 @@ const SearchUser = ({onClose}) => {
     const [searchUser,setSearchUser] = useState([])
     const [loading,setLoading] = useState(false)
     const [search,setSearch] = useState("")
+    const inputRef = useRef()
 
     const handleSearchUser = async()=>{
         
@@ -24,11 +25,13 @@ const SearchUser = ({onClose}) => {
             console.log(search)
     }
 
+   
     useEffect(()=>{
         handleSearchUser()
     }, [search])
 
-    
+    useEffect(() => inputRef.current.focus(), [])
+
     return (
     <div className='fixed top-0 bottom-0 left-0 right-0 bg-slate-700 bg-opacity-40 p-2 z-10'>
         <div className='w-full max-w-lg mx-auto mt-10'>
@@ -36,7 +39,8 @@ const SearchUser = ({onClose}) => {
             <div className='bg-white rounded h-14 overflow-hidden flex '>
                 <input 
                     type='text'
-                    placeholder='Search user by name, email....'
+                    ref={inputRef}
+                    placeholder='Search user by name'
                     className='w-full outline-none py-1 h-full px-4'
                     onChange={(e)=>setSearch(e.target.value)}
                     value={search}
