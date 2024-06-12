@@ -6,6 +6,7 @@ import {BiLogOut} from "react-icons/bi";
 import Avatar from "./Avatar";
 import { FiArrowUpLeft } from "react-icons/fi";
 import SearchUser from "./SearchUser";
+import { IoSettingsOutline } from "react-icons/io5";
 
 
 const Sidebar = () => {
@@ -31,21 +32,29 @@ const Sidebar = () => {
                     </div>
                 </div>
 
-                    <div>
-                        <button className='mx-auto'>
-                            <Avatar
-                                width={40}
-                                height={40}
-                                name={"ThuyThuy"}
-                            />
-                        </button>
-                        <button title='logout'
+                <div>
+                    <button className='mx-auto'>
+                        <Avatar
+                            width={40}
+                            height={40}
+                            name={"ThuyThuy"}
+                        />
+                    </button>
+                    {/*button setting*/}
+                    <button title='setting'
+                            className='w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded'>
+                            <span className='-ml-2'>
+                            <IoSettingsOutline  size={25}/>
+                            </span>
+                    </button>
+
+                    <button title='logout'
                             className='w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded'>
                             <span className='-ml-2'>
                             <BiLogOut size={25}/>
                             </span>
-                        </button>
-                    </div>
+                    </button>
+                </div>
             </div>
             <div className='w-full '>
                 <div className='h-16 flex items-center'>
