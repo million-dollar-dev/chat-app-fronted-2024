@@ -103,8 +103,7 @@ const RegisterPage = () => {
           </button>
         </div>
         <p className='my-3 text-center'>Already have account ? <Link to={"/login"} className='hover:text-primary font-semibold'>Login</Link></p>
-        {/* tag switchButton*/}
-        <SwichButton onToggle={handleToggle} initialState={switchState} />
+
 
       </div>
     </div>
