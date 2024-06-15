@@ -1,45 +1,34 @@
-const WEBSOCKET_URL = 'ws://140.238.54.136:8080/chat/chat';
+class WebSocketService {
+    constructor() {
+        this.socket = null;
+    }
 
-export function createWebSocket(onMessage) {
-    const socket = new WebSocket(WEBSOCKET_URL);
+    connect(url) {
+        this.socket = new WebSocket(url);
 
-    socket.onopen = () => {
-        console.log('Connected to WebSocket server');
-    };
+        this.socket.onopen = () => {
+            console.log('WebSocket connection established');
+        };
 
-    socket.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        onMessage(message);
-    };
+        this.socket.onmessage = (message) => {
+            console.log('Received message:', message.data);
+        };
 
-    socket.onerror = (error) => {
-        console.error('WebSocket Error:', error);
-    };
+        this.socket.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
 
-    socket.onclose = () => {
-        console.log('WebSocket connection closed');
-    };
+        this.socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+    }
 
-    return socket;
-}
-
-export function register(socket, user, password) {
-    const registerPayload = {
-        "action": "onchat",
-        "data": {
-            "event": "REGISTER",
-            "data": {
-                "user": user,
-                "pass": password,
-            }
+    send(data) {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            this.socket.send(JSON.stringify(data));
         }
-    };
-
-    if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(registerPayload));
-    } else {
-        socket.addEventListener('open', () => {
-            socket.send(JSON.stringify(registerPayload));
-        });
     }
 }
+
+const websocketService = new WebSocketService();
+export default websocketService;
