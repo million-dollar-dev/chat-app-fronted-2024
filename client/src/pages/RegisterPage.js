@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {createWebSocket} from "../services/websocket";
 import toast, {Toaster} from "react-hot-toast";
-import SwichButton from "../components/SwichButton";
 
 const RegisterPage = () => {
   const navigate = useNavigate()
@@ -17,23 +15,23 @@ const RegisterPage = () => {
     setSwitchState(newState);
   };
 
-  const [socket, setSocket] = useState(null);
-  const connectSocketTest = () => {
-    console.log('connected');
-    if (!socket) {
-      const newSocket = createWebSocket((message) => {
-        console.log('Received message:', message);
-      });
-      setSocket(newSocket);
-    }
-  }
+  //const [socket, setSocket] = useState(null);
+  // const connectSocketTest = () => {
+  //   console.log('connected');
+  //   if (!socket) {
+  //     const newSocket = createWebSocket((message) => {
+  //       console.log('Received message:', message);
+  //     });
+  //     setSocket(newSocket);
+  //   }
+  // }
   // useEffect(() => {
   //   if (socket !== null) {
   //     toast.success(' connected');
   //   }
   // }, [socket]);
   const handleClickRegister = () => {
-    connectSocketTest()
+    //connectSocketTest()
     // validate data
     if (data.name === "" || data.password === "" || !regexName.test(data.name)) {
       toast.error("username or password is not comfort")
