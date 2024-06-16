@@ -1,19 +1,29 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import {IoChatbubbleEllipses} from "react-icons/io5";
 import {FaUserPlus} from "react-icons/fa";
 import {NavLink} from "react-router-dom";
 import {BiLogOut} from "react-icons/bi";
 import Avatar from "./Avatar";
-import { FiArrowUpLeft } from "react-icons/fi";
+import {FiArrowUpLeft} from "react-icons/fi";
 import SearchUser from "./SearchUser";
-import { IoSettingsOutline } from "react-icons/io5";
+import {IoSettingsOutline} from "react-icons/io5";
+import SettingPopup from "./SettingPopup";
 
 
 const Sidebar = () => {
-    const [openSearchUser,setOpenSearchUser] = useState(false)
+    const [openSearchUser, setOpenSearchUser] = useState(false)
+
+    const [showPopup, setShowPopup] = useState(false);
+    const togglePopup = () => {
+        setShowPopup(!showPopup);
+    };
+    const handleClose = () => {
+        setShowPopup(false);
+    };
     return (
         <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
-            <div className='bg-slate-100 w-12 h-full rounded-tr-lg rounded-br-lg py-5 text-slate-600 flex flex-col justify-between'>
+            <div
+                className='bg-slate-100 w-12 h-full rounded-tr-lg rounded-br-lg py-5 text-slate-600 flex flex-col justify-between'>
                 <div>
                     <NavLink
                         className={({isActive}) => `w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded ${isActive && 'bg-slate-200'}`}
@@ -24,8 +34,8 @@ const Sidebar = () => {
                     </NavLink>
 
                     <div title='add friend'
-                        onClick={() => setOpenSearchUser(true)}
-                        className='w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded'>
+                         onClick={() => setOpenSearchUser(true)}
+                         className='w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded'>
                         <FaUserPlus
                             size={25}
                         />
@@ -41,11 +51,13 @@ const Sidebar = () => {
                         />
                     </button>
                     {/*button setting*/}
-                    <button title='setting'
+                    <button title='setting' onClick={togglePopup}
                             className='w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded'>
                             <span className='-ml-2'>
-                            <IoSettingsOutline  size={25}/>
+                            <IoSettingsOutline size={25}/>
                             </span>
+                        {/*<SettingPopup handleClose={handleClose} isOpen={showPopup}/>*/}
+
                     </button>
 
                     <button title='logout'
@@ -76,9 +88,10 @@ const Sidebar = () => {
             {/**search user */}
             {
                 openSearchUser && (
-                    <SearchUser onClose={()=>setOpenSearchUser(false)}/>
+                    <SearchUser onClose={() => setOpenSearchUser(false)}/>
                 )
             }
+            {showPopup && <SettingPopup handleClose={handleClose} />}
         </div>
     )
 }
