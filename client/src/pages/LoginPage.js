@@ -1,14 +1,16 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {Link, useNavigate} from "react-router-dom";
-import {FaRegEye, FaRegEyeSlash} from "react-icons/fa";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import toast from "react-hot-toast";
 import websocketService from "../services/websocket";
+import { useDispatch } from "react-redux";
+import {setUser} from "../redux/actions";
 
 const LoginPage = () => {
     const [visible, setVisible] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -31,6 +33,8 @@ const LoginPage = () => {
             const response =  JSON.parse(message.data);
             console.log(response);
             if (response.status === 'success') {
+                dispatch(setUser(username));
+                localStorage.setItem('isLogin', 'true');
                 navigate('/');
                 toast.success('Login successfully');
             } else {
@@ -73,7 +77,6 @@ const LoginPage = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className='flex-1 bg-slate-100 px-2 py-1 focus:outline-primary pr-12 rounded'
-
                             />
                             <button
                                 className="text-xl p-2 absolute top-0.2 right-2"
