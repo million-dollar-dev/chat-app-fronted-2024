@@ -1,11 +1,21 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Outlet, useLocation, useNavigate} from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import logo from "../assets/logo.png"
+import {useSelector} from "react-redux";
+import {selectorUser} from "../redux/selectors";
 const Home = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const basePath = location.pathname === "/";
+    const user = useSelector(selectorUser);
+
+    // auth
+    // useEffect(() => {
+    //     if (user == '')
+    //         navigate('/login');
+    // }, []);
+
     return (
         <div className='grid lg: grid-cols-[300px,1fr] h-screen max-h-screen'>
             <section className={`bg-white ${!basePath && "hidden"} lg:block`}>
@@ -16,7 +26,7 @@ const Home = () => {
                 <Outlet></Outlet>
             </section>
 
-            <div className='lg:flex justify-center items-center flex-col-gap-2 hidden'>
+            <div className={`justify-center items-center flex-col gap-2 hidden ${!basePath ? "hidden" : "lg:flex" }`}>
                 <div>
                     <img
                         src={logo}

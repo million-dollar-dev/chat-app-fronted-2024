@@ -40,7 +40,6 @@ const Avatar = ({name, width, height}) => {
                         size={width}
                     />
                 )
-
             }
         </div>
     )
