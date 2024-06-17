@@ -2,11 +2,9 @@ import React from 'react';
 import {Outlet, useLocation, useNavigate} from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import logo from "../assets/logo.png"
-
 const Home = () => {
     const navigate = useNavigate();
     const location = useLocation();
-
     const basePath = location.pathname === "/";
     return (
         <div className='grid lg: grid-cols-[300px,1fr] h-screen max-h-screen'>

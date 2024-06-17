@@ -8,12 +8,14 @@ import {FiArrowUpLeft} from "react-icons/fi";
 import SearchUser from "./SearchUser";
 import {IoSettingsOutline} from "react-icons/io5";
 import SettingPopup from "./SettingPopup";
+import {useSelector} from "react-redux";
+import {selectorUser} from "../redux/selectors";
 
 
 const Sidebar = () => {
     const [openSearchUser, setOpenSearchUser] = useState(false)
-
     const [showPopup, setShowPopup] = useState(false);
+    const user = useSelector(selectorUser);
     const togglePopup = () => {
         setShowPopup(!showPopup);
     };
@@ -47,7 +49,7 @@ const Sidebar = () => {
                         <Avatar
                             width={40}
                             height={40}
-                            name={"ThuyThuy"}
+                            name={user}
                         />
                     </button>
                     {/*button setting*/}
