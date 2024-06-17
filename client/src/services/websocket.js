@@ -4,28 +4,38 @@ class WebSocketService {
     }
 
     connect(url) {
-        this.socket = new WebSocket(url);
+        if (!this.socket || this.socket.readyState === WebSocket.CLOSED) {
+            this.socket = new WebSocket(url);
 
-        this.socket.onopen = () => {
-            console.log('WebSocket connection established');
-        };
+            this.socket.onopen = () => {
+                console.log('WebSocket connected');
+            };
 
-        this.socket.onmessage = (message) => {
-            console.log('Received message:', message.data);
-        };
+            this.socket.onclose = () => {
+                console.log('WebSocket disconnected');
+            };
 
-        this.socket.onclose = () => {
-            console.log('WebSocket connection closed');
-        };
-
-        this.socket.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
+            this.socket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
     }
 
     send(data) {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.socket.send(JSON.stringify(data));
+        } else {
+            console.error('WebSocket is not connected');
+        }
+    }
+
+    onMessage(callback) {
+        if (this.socket) {
+            this.socket.onmessage = (message) => {
+                callback(JSON.parse(message.data));
+            };
+        } else {
+            console.error('WebSocket is not initialized');
         }
     }
 }
