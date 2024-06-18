@@ -2,12 +2,15 @@ import React, {useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast, {Toaster} from "react-hot-toast";
 import websocketService from "../services/websocket";
+import { useDispatch } from "react-redux";
+import {setUser} from "../redux/actions";
 
 const RegisterPage = () => {
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [repeatPassword, setRepeatPassword] = useState('')
+  const dispatch = useDispatch()
   
   const handleRegister = async(e) => {
     e.preventDefault()
@@ -40,7 +43,8 @@ const RegisterPage = () => {
             const response =  JSON.parse(message.data)
             console.log(response);
             if (response.status === 'success') {
-                navigate('/')
+                dispatch(setUser(username));
+                navigate('/');
                 toast.success('Register successfully')
             } else {
                 setPassword('')
