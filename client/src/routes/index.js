@@ -1,6 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import CheckEmailPage from "../pages/CheckEmailPage";
-import CheckPasswordPage from "../pages/CheckPasswordPage";
 import RegisterPage from "../pages/RegisterPage";
 import App from "../App";
 import Home from "../pages/Home";
@@ -18,20 +16,6 @@ const router = createBrowserRouter([
                 element:
                     <AuthLayouts>
                         <RegisterPage/>
-                    </AuthLayouts>
-            },
-            {
-                path: "email",
-                element:
-                    <AuthLayouts>
-                        <CheckEmailPage/>
-                    </AuthLayouts>
-            },
-            {
-                path: "password",
-                element:
-                    <AuthLayouts>
-                        <CheckPasswordPage/>
                     </AuthLayouts>
             },
             {

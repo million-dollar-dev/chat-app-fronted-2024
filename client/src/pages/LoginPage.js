@@ -34,7 +34,6 @@ const LoginPage = () => {
             console.log(response);
             if (response.status === 'success') {
                 dispatch(setUser(username));
-                localStorage.setItem('isLogin', 'true');
                 navigate('/');
                 toast.success('Login successfully');
             } else {
