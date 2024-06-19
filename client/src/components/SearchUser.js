@@ -17,9 +17,9 @@ const SearchUser = ({onClose}) => {
             setLoading(false)
 
             setSearchUser([
-                {name: "Thinh"},
-                {name: "Thuy"},
-                {name: "Tuan"}
+                "long",
+                "Thuy",
+                "21130599",
             ])
 
             console.log(search)
@@ -65,9 +65,9 @@ const SearchUser = ({onClose}) => {
                 }
                 {
                     searchUser.length !==0 && !loading && (
-                        searchUser.map((user,index)=>{
+                        searchUser.map(username => {
                             return(
-                                <UserSearchCard key={user._id} user={user} onClose={onClose}/>
+                                <UserSearchCard key={username} username={username} onClose={onClose}/>
                             )
                         })
                     )

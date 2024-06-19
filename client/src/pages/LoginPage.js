@@ -30,7 +30,7 @@ const LoginPage = () => {
         websocketService.send(loginData);
 
         websocketService.socket.onmessage = (message) => {
-            const response =  JSON.parse(message.data);
+            const response = JSON.parse(message.data);
             console.log(response);
             if (response.status === 'success') {
                 dispatch(setUser(username));

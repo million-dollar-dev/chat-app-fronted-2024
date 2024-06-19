@@ -49,7 +49,7 @@ const Sidebar = () => {
                         <Avatar
                             width={40}
                             height={40}
-                            name={user}
+                            username={user}
                         />
                     </button>
                     {/*button setting*/}
