@@ -9,6 +9,11 @@ const rootReducer = (state = initialState, action) => {
                 ...state,
                 user: action.payload
             };
+        case 'logout':
+            return {
+                ...state,
+                user: action.payload
+            }
         default:
             return state;
     }
