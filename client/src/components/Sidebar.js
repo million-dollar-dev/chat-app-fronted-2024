@@ -1,27 +1,34 @@
 import React, {useState} from "react";
 import {IoChatbubbleEllipses} from "react-icons/io5";
 import {FaUserPlus} from "react-icons/fa";
-import {NavLink} from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
 import {BiLogOut} from "react-icons/bi";
 import Avatar from "./Avatar";
 import {FiArrowUpLeft} from "react-icons/fi";
 import SearchUser from "./SearchUser";
 import {IoSettingsOutline} from "react-icons/io5";
 import SettingPopup from "./SettingPopup";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {selectorUser} from "../redux/selectors";
+import { logout } from "../redux/actions";
 
 
 const Sidebar = () => {
     const [openSearchUser, setOpenSearchUser] = useState(false)
     const [showPopup, setShowPopup] = useState(false);
     const user = useSelector(selectorUser);
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     const togglePopup = () => {
         setShowPopup(!showPopup);
     };
     const handleClose = () => {
         setShowPopup(false);
     };
+    const handleLogout = () => {
+        dispatch(logout())
+        navigate('/login')
+    }
     return (
         <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
             <div
@@ -63,7 +70,10 @@ const Sidebar = () => {
                     </button>
 
                     <button title='logout'
-                            className='w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded'>
+                            className='w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded'
+                            onClick={handleLogout}
+                    >
+                            
                             <span className='-ml-2'>
                             <BiLogOut size={25}/>
                             </span>
