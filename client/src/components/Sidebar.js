@@ -65,8 +65,6 @@ const Sidebar = () => {
                             <span className='-ml-2'>
                             <IoSettingsOutline size={25}/>
                             </span>
-                        {/*<SettingPopup handleClose={handleClose} isOpen={showPopup}/>*/}
-
                     </button>
 
                     <button title='logout'

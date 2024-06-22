@@ -11,7 +11,7 @@ const SwitchButton = ({ onToggle, initialState = false }) => {
 
     return (
         <div
-            className={`w-12 h-6 flex items-center bg-gray-300 rounded-full p-1 cursor-pointer transition-colors duration-300 ${isOn ? 'bg-green-500' : 'bg-gray-300'}`}
+            className={`w-12 h-6 flex items-center bg-gray-300 rounded-full p-1 cursor-pointer transition-colors duration-300 ${isOn ? 'bg-primary' : 'bg-gray-300'}`}
             onClick={toggleSwitch}
         >
             <div
