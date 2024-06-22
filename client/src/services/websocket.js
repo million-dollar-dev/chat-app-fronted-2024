@@ -12,7 +12,7 @@ class WebSocketService {
             };
 
             this.socket.onclose = () => {
-                console.log('WebSocket disconnected');
+                this.connect(url);
             };
 
             this.socket.onerror = (error) => {

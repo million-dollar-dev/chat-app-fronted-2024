@@ -12,7 +12,7 @@ const RegisterPage = () => {
   const [repeatPassword, setRepeatPassword] = useState('')
   const dispatch = useDispatch()
   
-  const handleRegister = async(e) => {
+  const handleRegister = (e) => {
     e.preventDefault()
     e.stopPropagation()
 
@@ -44,6 +44,8 @@ const RegisterPage = () => {
             console.log(response);
             if (response.status === 'success') {
                 dispatch(setUser(username));
+                setUsername('');
+                setPassword('');
                 navigate('/');
                 toast.success('Register successfully')
             } else {
