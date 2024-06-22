@@ -32,16 +32,25 @@ const LoginPage = () => {
         websocketService.socket.onmessage = (message) => {
             const response = JSON.parse(message.data);
             console.log(response);
-            if (response.status === 'success') {
-                dispatch(setUser(username));
-                navigate('/');
-                toast.success('Login successfully');
+            if (response.event === 'LOGIN') {
+                if (response.status === 'success' ) {
+                    dispatch(setUser(username));
+                    navigate('/');
+                    setUsername('');
+                    setPassword('');
+                    toast.success('Login successfully');
+                } else {
+                    setPassword('');
+                    toast.error(response.mes);
+                }           
             } else {
-                setPassword('');
-                toast.error(response.mes);
+                toast(response.data)
             }
+                 
         };
     };
+
+    
 
     return (
         <div className='mt-5'>

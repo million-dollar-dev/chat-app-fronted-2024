@@ -11,10 +11,10 @@ const Home = () => {
     const user = useSelector(selectorUser);
 
     // auth
-    // useEffect(() => {
-    //     if (user == '')
-    //         navigate('/login');
-    // }, []);
+    useEffect(() => {
+        if (user == '')
+            navigate('/login');
+    }, []);
 
     return (
         <div className='grid lg: grid-cols-[300px,1fr] h-screen max-h-screen'>

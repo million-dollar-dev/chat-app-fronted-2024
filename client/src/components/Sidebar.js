@@ -11,6 +11,8 @@ import SettingPopup from "./SettingPopup";
 import {useDispatch, useSelector} from "react-redux";
 import {selectorUser} from "../redux/selectors";
 import { logout } from "../redux/actions";
+import websocketService from "../services/websocket";
+import toast from "react-hot-toast";
 
 
 const Sidebar = () => {
@@ -25,9 +27,20 @@ const Sidebar = () => {
     const handleClose = () => {
         setShowPopup(false);
     };
-    const handleLogout = () => {
+    const handleLogout = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        websocketService.send({
+            "action": "onchat",
+            "data": {
+                "event": "LOGOUT"                
+            }
+        })
+        
+        console.log('out')
         dispatch(logout())
         navigate('/login')
+        websocketService.connect('ws://140.238.54.136:8080/chat/chat');      
     }
     return (
         <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
@@ -71,7 +84,6 @@ const Sidebar = () => {
                             className='w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded'
                             onClick={handleLogout}
                     >
-                            
                             <span className='-ml-2'>
                             <BiLogOut size={25}/>
                             </span>
