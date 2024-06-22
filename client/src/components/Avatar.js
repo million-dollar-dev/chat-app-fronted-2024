@@ -1,6 +1,4 @@
-import React, {useEffect, useState} from 'react';
 import {PiUserCircle} from "react-icons/pi";
-import websocketService from "../services/websocket";
 
 const Avatar = ({username, width, height}) => {
     let avatarName = "";
@@ -26,30 +24,8 @@ const Avatar = ({username, width, height}) => {
     ];
 
     const randomNumber = Math.floor(Math.random() * 9);
-    const [isOnline, setOnline] = useState(false);
-    const checkOnline = () => {
-        const data = {
-            "action": "onchat",
-            "data": {
-            "event": "CHECK_USER",
-                "data": {
-                "user": username
-                }
-            }
-        };
+    const isOnline = true;
 
-        websocketService.send(data);
-
-        websocketService.socket.onmessage = (message) => {
-            const response = JSON.parse(message.data);
-            setOnline(response.data.status);
-
-        };
-    };
-
-    useEffect(() => {
-      checkOnline();
-    });
     return (
         <div className={`text-slate-800  rounded-full font-bold relative`}
              style={{width: width + "px", height: height + "px"}}>
@@ -65,10 +41,9 @@ const Avatar = ({username, width, height}) => {
                     />
                 )
             }
-
             {
                 isOnline && (
-                    <div className='bg-green-600 p-1 absolute bottom-1 -right-0 z-10 rounded-full'></div>
+                    <div className='bg-green-600 p-1 absolute bottom-1 -right-0 z-10 rounded-full border-2 border-white'></div>
                 )
             }
         </div>
