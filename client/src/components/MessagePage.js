@@ -5,14 +5,47 @@ import {useEffect, useState} from "react";
 import Avatar from "./Avatar";
 import {FaAngleLeft} from "react-icons/fa";
 import { RiSendPlane2Fill } from "react-icons/ri";
-import backgroundImage from '../assets/wallapaper.jpeg'
+import backgroundImage from '../assets/wallapaper.jpeg';
+import websocketService from "../services/websocket";
+import {setUser} from "../redux/actions";
+import toast from "react-hot-toast";
 
 const MessagePage = () => {
     const params = useParams();
     // const user = useSelector(searchUser);
-    const [user, setUser] = useState("");
+    const [userChat, setUserChat] = useState("");
+    const [allMessage, setAllMessage] = useState([]);
+
+    const getAllMessage = (username) => {
+        const data = {
+            "action": "onchat",
+            "data": {
+                "event": "GET_PEOPLE_CHAT_MES",
+                "data": {
+                    "name": username,
+                    "page":1
+                }
+            }
+        };
+        websocketService.send(data);
+        console.log(userChat)
+        websocketService.socket.onmessage = (message) => {
+            const response = JSON.parse(message.data);
+            console.log(response);
+            if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success') {
+                setAllMessage(response.data.reverse());
+            } else {
+                toast(response.data)
+            }
+
+        };
+    }
+
     useEffect(() => {
-        setUser(params.username)
+        setUserChat(params.username);
+        if (websocketService !== null) {
+            getAllMessage(params.username);
+        }
     }, [params])
     return (
         <div style={{ backgroundImage : `url(${backgroundImage})`}} className='bg-no-repeat bg-cover'>
@@ -43,7 +76,30 @@ const MessagePage = () => {
             {/*all message*/}
             <section
                 className='h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll scrollbar relative bg-slate-200 bg-opacity-50'>
-                <h1>Message</h1>
+                {/*all message show here*/}
+                <div className='flex flex-col gap-2 py-2 mx-2'>
+                    {
+                        allMessage.map((msg)=>{
+                            let timeSplit = msg.createAt.split(" ");
+                            let timeString = timeSplit[1];
+                            let [hours, minutes, seconds] = timeString.split(':').map(Number);
+                            hours = (hours + 7) % 24;
+                            let newTimeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                            return(
+                                <div key={msg.id}
+                                     className={` p-1 py-1 rounded-full w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${userChat !== msg.name ? "ml-auto bg-teal-100" : "bg-white"}`}>
+                                    <div className='px-2 relative inline-block group'>
+                                        {msg.mes}
+                                        <div
+                                            className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${userChat !== msg.name ? "right-full" : "left-full" } text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>
+                                            {newTimeString}
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    }
+                </div>
             </section>
 
             {/*send message*/}
