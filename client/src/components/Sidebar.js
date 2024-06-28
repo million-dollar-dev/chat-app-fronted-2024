@@ -18,6 +18,23 @@ import toast from "react-hot-toast";
 const Sidebar = () => {
     const [openSearchUser, setOpenSearchUser] = useState(false)
     const [showPopup, setShowPopup] = useState(false);
+    const [allUser, setAllUser] = useState([
+        {
+            "name": "21130535",
+            "type": 0,
+            "actionTime": "2024-06-26 12:13:18"
+        },
+        {
+            "name": "long",
+            "type": 0,
+            "actionTime": "2024-06-26 10:59:04"
+        },
+        {
+            "name": "21130457",
+            "type": 0,
+            "actionTime": "2024-06-26 07:44:45"
+        }
+    ])
     const user = useSelector(selectorUser);
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -64,7 +81,7 @@ const Sidebar = () => {
                     </div>
                 </div>
 
-                <div>
+                <div className='flex flex-col items-center'>
                     <button className='mx-auto'>
                         <Avatar
                             width={40}
@@ -96,15 +113,42 @@ const Sidebar = () => {
                 </div>
                 <div className='bg-slate-200 p-[0.5px]'></div>
                 <div className=' h-[calc(100vh-65px)] overflow-x-hidden overflow-y-auto scrollbar'>
-                    <div className='mt-12'>
-                        <div className='flex justify-center items-center my-4 text-slate-500'>
-                            <FiArrowUpLeft
-                                size={50}
-                            />
-                        </div>
-                        <p className='text-lg text-center text-slate-400'>Explore users to start a conversation
-                            with.</p>
-                    </div>
+                    {
+                        allUser.length === 0 && (
+                            <div className='mt-12'>
+                                <div className='flex justify-center items-center my-4 text-slate-500'>
+                                    <FiArrowUpLeft
+                                        size={50}
+                                    />
+                                </div>
+                                <p className='text-lg text-center text-slate-400'>Explore users to start a conversation
+                                    with.
+                                </p>
+                            </div>
+                        )
+                    }
+                    {
+                        allUser.map((user) => {
+                            return (
+                                <NavLink to={"/"} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer'>
+                                    <div>
+                                        <Avatar                                        
+                                            username={user.name}
+                                            width={40}
+                                            height={40}
+                                        />    
+                                    </div>
+                                    <div>
+                                        <h3 className='text-ellipsis line-clamp-1 font-semibold text-base'>{user.name}</h3>
+                                        <div className='text-slate-500 text-xs flex items-center gap-1'>
+                                            <p className='text-ellipsis line-clamp-1'>{user.actionTime}</p>
+                                        </div>
+                                    </div>
+                                    
+                                </NavLink>
+                            )
+                        })
+                    }
                 </div>
             </div>
             {/**search user */}
