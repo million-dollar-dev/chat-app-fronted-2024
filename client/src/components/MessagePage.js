@@ -1,7 +1,7 @@
 import {Link, useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
 import searchUser from "./SearchUser";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import Avatar from "./Avatar";
 import {FaAngleLeft} from "react-icons/fa";
 import { RiSendPlane2Fill } from "react-icons/ri";
@@ -15,6 +15,8 @@ const MessagePage = () => {
     // const user = useSelector(searchUser);
     const [userChat, setUserChat] = useState("");
     const [allMessage, setAllMessage] = useState([]);
+    const [message,setMessage] = useState("");
+    const currentMessage = useRef(null);
 
     const getAllMessage = (username) => {
         const data = {
@@ -28,7 +30,6 @@ const MessagePage = () => {
             }
         };
         websocketService.send(data);
-        console.log(userChat)
         websocketService.socket.onmessage = (message) => {
             const response = JSON.parse(message.data);
             console.log(response);
@@ -40,6 +41,54 @@ const MessagePage = () => {
 
         };
     }
+
+    const handleSendMessage = (e)=>{
+        e.preventDefault()
+        if(message){
+            const messageData = {
+                "action": "onchat",
+                "data": {
+                    "event": "SEND_CHAT",
+                    "data": {
+                        "type": "people",
+                        "to": params.username,
+                        "mes": message
+                    }
+                }
+            };
+            websocketService.send(messageData);
+            websocketService.socket.onmessage = (message) => {
+                const response = JSON.parse(message.data)
+            };
+            const data = {
+                "action": "onchat",
+                "data": {
+                    "event": "GET_PEOPLE_CHAT_MES",
+                    "data": {
+                        "name": params.username,
+                        "page":1
+                    }
+                }
+            };
+            websocketService.send(data);
+
+            websocketService.socket.onmessage = (message) => {
+                const response = JSON.parse(message.data)
+                console.log(response)
+                console.log('send')
+                const test = [...allMessage, response.data[0]];
+                console.log('test', test);
+                setAllMessage((allMessage) => [...allMessage, response.data[0]]);
+            };
+            setMessage("");
+        }
+    }
+
+    useEffect(()=>{
+        if(currentMessage.current){
+            currentMessage.current.scrollIntoView({behavior : 'smooth', block : 'end'})
+        }
+    },[allMessage])
 
     useEffect(() => {
         setUserChat(params.username);
@@ -77,7 +126,7 @@ const MessagePage = () => {
             <section
                 className='h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll scrollbar relative bg-slate-200 bg-opacity-50'>
                 {/*all message show here*/}
-                <div className='flex flex-col gap-2 py-2 mx-2'>
+                <div className='flex flex-col gap-2 py-2 mx-2' ref={currentMessage}>
                     {
                         allMessage.map((msg)=>{
                             let timeSplit = msg.createAt.split(" ");
@@ -105,14 +154,16 @@ const MessagePage = () => {
             {/*send message*/}
             <section className='h-16 bg-white flex items-center px-4'>
                 {/**input box */}
-                <form className='h-full w-full flex gap-2'>
+                <form className='h-full w-full flex gap-2' onSubmit={handleSendMessage}>
                     <input
                         type='text'
                         placeholder='Type here message...'
                         className='py-1 px-4 outline-none w-full h-full'
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
                     />
                     <button className='text-primary hover:text-secondary'>
-                    <RiSendPlane2Fill size={28}/>
+                        <RiSendPlane2Fill size={28}/>
                     </button>
                 </form>
             </section>
