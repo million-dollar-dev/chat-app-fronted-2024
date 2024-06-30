@@ -55,9 +55,7 @@ const Sidebar = () => {
             if (response.event === 'GET_USER_LIST') {
                 if (response.status === 'success' )
                     setAllUser(response.data)         
-            } else {
-                toast(response.data)
-            }        
+            }
         }
     }
 
@@ -133,9 +131,9 @@ const Sidebar = () => {
                         )
                     }
                     {
-                        allUser.map((user) => {
+                        allUser.map((user, index) => {
                             return (
-                                <NavLink to={"/" + user.name} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer'>
+                                <NavLink key={index} to={"/" + user.name} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer'>
                                     <div>
                                         <Avatar                                        
                                             username={user.name}

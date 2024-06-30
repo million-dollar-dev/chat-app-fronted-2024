@@ -33,12 +33,34 @@ const MessagePage = () => {
         websocketService.socket.onmessage = (message) => {
             const response = JSON.parse(message.data);
             console.log(response);
-            if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success') {
+            console.log('all message now', allMessage)
+            if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success')
                 setAllMessage(response.data.reverse());
-            } else {
-                toast(response.data)
-            }
+            if (response.event === 'SEND_CHAT' && response.status === 'success')
+                handleUpdateMessage();
+        };
+    }
 
+    const handleUpdateMessage = () => {
+        const data = {
+            "action": "onchat",
+            "data": {
+                "event": "GET_PEOPLE_CHAT_MES",
+                "data": {
+                    "name": params.username,
+                    "page":1
+                }
+            }
+        };
+        websocketService.send(data);
+
+        websocketService.socket.onmessage = (message) => {
+            const response = JSON.parse(message.data)
+            console.log(response)
+            console.log('send')
+            const test = [...allMessage, response.data[0]];
+            console.log('test', test);
+            setAllMessage((allMessage) => [...allMessage, response.data[0]]);
         };
     }
 
@@ -60,35 +82,12 @@ const MessagePage = () => {
             websocketService.socket.onmessage = (message) => {
                 const response = JSON.parse(message.data)
             };
-            const data = {
-                "action": "onchat",
-                "data": {
-                    "event": "GET_PEOPLE_CHAT_MES",
-                    "data": {
-                        "name": params.username,
-                        "page":1
-                    }
-                }
-            };
-            websocketService.send(data);
-
-            websocketService.socket.onmessage = (message) => {
-                const response = JSON.parse(message.data)
-                console.log(response)
-                console.log('send')
-                const test = [...allMessage, response.data[0]];
-                console.log('test', test);
-                setAllMessage((allMessage) => [...allMessage, response.data[0]]);
-            };
+            handleUpdateMessage();
             setMessage("");
         }
     }
 
-    useEffect(()=>{
-        if(currentMessage.current){
-            currentMessage.current.scrollIntoView({behavior : 'smooth', block : 'end'})
-        }
-    },[allMessage])
+
 
     useEffect(() => {
         setUserChat(params.username);
@@ -96,6 +95,14 @@ const MessagePage = () => {
             getAllMessage(params.username);
         }
     }, [params])
+
+    useEffect(()=>{
+        if(currentMessage.current){
+            currentMessage.current.scrollIntoView({behavior : 'smooth', block : 'end'})
+        }
+    },[allMessage])
+
+
     return (
         <div style={{ backgroundImage : `url(${backgroundImage})`}} className='bg-no-repeat bg-cover'>
             <header className='sticky top-0 h-16 bg-white flex justify-between items-center px-4'>
