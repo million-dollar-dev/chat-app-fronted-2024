@@ -88,19 +88,6 @@ console.log(user);
                                     </div>
                                 </div>
                             </div>
-                            {/*<hr className="my-4 border-gray-300" />*/}
-                            {/*<div className="mb-4 flex">*/}
-                            {/*    <FaCreditCard className="mr-2" size={20} />*/}
-                            {/*    <h4 className="font-bold text-left">Quản lý khoản thanh toán</h4>*/}
-                            {/*</div>*/}
-                            {/*<div className="mb-4 flex">*/}
-                            {/*    <AiFillMessage className="mr-2" size={20} />*/}
-                            {/*    <h4 className="font-bold text-left">Quản lý hoạt động gửi tin nhắn</h4>*/}
-                            {/*</div>*/}
-                            {/*<div className="mb-4 flex">*/}
-                            {/*    <ImBlocked className="mr-2" size={20} />*/}
-                            {/*    <h4 className="font-bold text-left">Quản lý phần Chặn</h4>*/}
-                            {/*</div>*/}
                         </div>
                     </div>
                 </div>
