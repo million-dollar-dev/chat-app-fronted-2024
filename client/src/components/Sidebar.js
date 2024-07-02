@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {IoChatbubbleEllipses} from "react-icons/io5";
 import {FaUserPlus} from "react-icons/fa";
 import {NavLink, useNavigate} from "react-router-dom";
@@ -18,23 +18,7 @@ import toast from "react-hot-toast";
 const Sidebar = () => {
     const [openSearchUser, setOpenSearchUser] = useState(false)
     const [showPopup, setShowPopup] = useState(false);
-    const [allUser, setAllUser] = useState([
-        {
-            "name": "21130535",
-            "type": 0,
-            "actionTime": "2024-06-26 12:13:18"
-        },
-        {
-            "name": "long",
-            "type": 0,
-            "actionTime": "2024-06-26 10:59:04"
-        },
-        {
-            "name": "21130457",
-            "type": 0,
-            "actionTime": "2024-06-26 07:44:45"
-        }
-    ])
+    const [allUser, setAllUser] = useState([])
     const user = useSelector(selectorUser);
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -53,12 +37,33 @@ const Sidebar = () => {
                 "event": "LOGOUT"                
             }
         })
-        
-        console.log('out')
         dispatch(logout())
         navigate('/login')
         websocketService.connect('ws://140.238.54.136:8080/chat/chat');      
     }
+
+    const handleGetAllUser = () => {
+        websocketService.send({
+            "action": "onchat",
+            "data": {
+                "event": "GET_USER_LIST"                
+            }
+        })
+        websocketService.socket.onmessage = (message) => {
+            const response = JSON.parse(message.data);
+            console.log(response);
+            if (response.event === 'GET_USER_LIST') {
+                if (response.status === 'success' )
+                    setAllUser(response.data)         
+            } else {
+                toast(response.data)
+            }        
+        }
+    }
+
+    useEffect(() => {
+        handleGetAllUser()
+    }, [user])
     return (
         <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
             <div
@@ -130,7 +135,7 @@ const Sidebar = () => {
                     {
                         allUser.map((user) => {
                             return (
-                                <NavLink to={"/"} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer'>
+                                <NavLink to={"/" + user.name} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer'>
                                     <div>
                                         <Avatar                                        
                                             username={user.name}
