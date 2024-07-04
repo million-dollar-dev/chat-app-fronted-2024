@@ -55,14 +55,13 @@ const Sidebar = () => {
             if (response.event === 'GET_USER_LIST') {
                 if (response.status === 'success' )
                     setAllUser(response.data)         
-            } else {
-                toast(response.data)
-            }        
+            }
         }
     }
 
     useEffect(() => {
-        handleGetAllUser()
+        if (user)
+            handleGetAllUser()
     }, [user])
     return (
         <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
@@ -133,9 +132,9 @@ const Sidebar = () => {
                         )
                     }
                     {
-                        allUser.map((user) => {
+                        allUser.map((user, index) => {
                             return (
-                                <NavLink to={"/" + user.name} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer'>
+                                <NavLink key={index} to={"/" + user.name} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer'>
                                     <div>
                                         <Avatar                                        
                                             username={user.name}
