@@ -60,7 +60,8 @@ const Sidebar = () => {
     }
 
     useEffect(() => {
-        handleGetAllUser()
+        if (user)
+            handleGetAllUser()
     }, [user])
     return (
         <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>

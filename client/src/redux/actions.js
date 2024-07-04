@@ -5,12 +5,6 @@ export const setUser = (data) => {
     };
 };
 
-export const getUser = (data) => {
-    return {
-        type: 'getUser',
-        payload: data
-    };
-};
 
 export const logout = () => {
     return {
