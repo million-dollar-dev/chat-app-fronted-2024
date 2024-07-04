@@ -13,6 +13,8 @@ import {selectorUser} from "../redux/selectors";
 import { logout } from "../redux/actions";
 import websocketService from "../services/websocket";
 import toast from "react-hot-toast";
+import {useTranslation} from "react-i18next";
+
 
 
 const Sidebar = () => {
@@ -22,6 +24,8 @@ const Sidebar = () => {
     const user = useSelector(selectorUser);
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const { t } = useTranslation();
+
     const togglePopup = () => {
         setShowPopup(!showPopup);
     };
@@ -126,8 +130,7 @@ const Sidebar = () => {
                                         size={50}
                                     />
                                 </div>
-                                <p className='text-lg text-center text-slate-400'>Explore users to start a conversation
-                                    with.
+                                <p className='text-lg text-center text-slate-400'>{t('explore_users_to_start_a_conversation_with.')}
                                 </p>
                             </div>
                         )

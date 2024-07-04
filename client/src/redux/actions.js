@@ -5,7 +5,6 @@ export const setUser = (data) => {
     };
 };
 
-
 export const logout = () => {
     return {
         type: 'logout',

@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import websocketService from "../services/websocket";
 import { useDispatch } from "react-redux";
 import {setUser} from "../redux/actions";
+import {useTranslation} from "react-i18next";
 
 const LoginPage = () => {
     const [visible, setVisible] = useState(false);
@@ -12,6 +13,8 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { t } = useTranslation();
+
     const handleLogin = async (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -38,7 +41,7 @@ const LoginPage = () => {
                     navigate('/');
                     setUsername('');
                     setPassword('');
-                    toast.success('Login successfully');
+                    toast.success(t('login_successfully'));
                 } else {
                     setPassword('');
                     toast.error(response.mes);
@@ -56,17 +59,17 @@ const LoginPage = () => {
         <div className='mt-5'>
             <div className='bg-white w-full max-w-sm mx-2 rounded overflow-hidden p-4 mx-auto'>
                 <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Welcome back!
+                    {t('welcome_back')}
                 </h2>
                 <div className="grid gap-4 mt-5">
                     <div className="flex flex-col gap-1">
-                        <label htmlFor='name'>Username :</label>
+                        <label htmlFor='name'>{t('username')}</label>
                         <input
                             type='text'
                             id='name'
                             name='name'
                             required
-                            placeholder='Enter your username'
+                            placeholder={t('enter_your_username')}
                             className='bg-slate-100 px-2 py-1 focus:outline-primary'
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -74,14 +77,14 @@ const LoginPage = () => {
                         />
                     </div>
                     <div className="flex flex-col gap-1 ">
-                        <label htmlFor='email'>Password :</label>
+                        <label htmlFor='email'>{t('password')}</label>
                         <div className="flex items-center relative">
                             <input
                                 type={visible ? 'text' : 'password'}
                                 id='password'
                                 name='password'
                                 required
-                                placeholder='Enter your password'
+                                placeholder={t('enter_your_password')}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className='flex-1 bg-slate-100 px-2 py-1 focus:outline-primary pr-12 rounded'
@@ -98,11 +101,11 @@ const LoginPage = () => {
                         className='bg-primary text-lg px-4 py-1 hover:bg-secondary rounded mt-2 text-white leading-relaxed tracking-wide'
                         onClick={handleLogin}
                     >
-                        Login
+                        {t('login')}
                     </button>
                 </div>
-                <p className='my-3 text-center'>Don't have an account? <Link to={"/register"}
-                                                                             className='hover:text-primary font-semibold'>Register</Link>
+                <p className='my-3 text-center'>{t('dont_have_an_account')}<Link to={"/register"}
+                                                                             className='hover:text-primary font-semibold'>{t('register')}</Link>
                 </p>
             </div>
         </div>
