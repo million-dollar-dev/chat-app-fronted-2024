@@ -104,7 +104,6 @@ const SettingPopup = ({handleClose}) => {
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
