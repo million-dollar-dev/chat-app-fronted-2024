@@ -39,8 +39,11 @@ const MessagePage = () => {
         websocketService.send(data);
         websocketService.socket.onmessage = (message) => {
             const response = JSON.parse(message.data);
+            console.log('get all res', response)
             if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success')
                 setAllMessage(response.data.reverse());
+            if (response.event === 'SEND_CHAT' && response.status === 'success')
+                handleUpdateMessage()
         };
     }
 
@@ -62,12 +65,12 @@ const MessagePage = () => {
             if (response.event === 'SEND_CHAT' && response.status === 'success')
                 handleUpdateMessage()
             else {
+                console.log('update res', response)
                 const lastMess = [...allMessage, response.data[0]];
                 console.log('last Mess', lastMess);
                 setAllMessage((allMessage) => [...allMessage, response.data[0]]);
             }
         };
-
     }
 
     const handleSendMessage = (e) => {
@@ -87,12 +90,12 @@ const MessagePage = () => {
             websocketService.send(messageData);
             websocketService.socket.onmessage = (message) => {
                 const response = JSON.parse(message.data)
+                console.log('send res', response)
             };
             handleUpdateMessage();
             setMessage("");
         }
     }
-
 
     useEffect(() => {
         setUserChat(params.username);
@@ -141,7 +144,6 @@ const MessagePage = () => {
                 {/*all message show here*/}
                 <div className='flex flex-col gap-2 py-2 mx-2' ref={currentMessage}>
                     {
-
                         allMessage.map((msg) => {
                             let showDatetime = false;
                             if (prevMesCreateAt) {
@@ -150,13 +152,8 @@ const MessagePage = () => {
                                     showDatetime = true;
                                 }
                             }
-                            let timeSplit = msg.createAt.split(" ");
-                            let timeString = timeSplit[1];
-                            let [hours, minutes, seconds] = timeString.split(':').map(Number);
-                            hours = (hours + 7) % 24;
-                            let newTimeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
                             prevMesCreateAt = dayjs.utc(msg.createAt, 'DD/MM/YYYY HH:mm:ss').tz();
-                            console.log(prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss'));
+                            let newTimeString = dayjs.utc(msg.createAt, 'HH:mm').tz();
                             return(
                                 <>
                                     {showDatetime && <span className= "text-center">{prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss')}</span>}
@@ -167,8 +164,7 @@ const MessagePage = () => {
                                             {msg.mes}
                                             <div
                                                 className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${userChat !== msg.name ? "right-full" : "left-full" } text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>
-                                                {newTimeString}
-
+                                                {newTimeString.format('HH:mm')}
                                             </div>
                                         </div>
                                     </div>
