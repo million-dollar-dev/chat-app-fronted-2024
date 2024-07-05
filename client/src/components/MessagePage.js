@@ -6,11 +6,12 @@ import {FaAngleLeft} from "react-icons/fa";
 import {RiSendPlane2Fill} from "react-icons/ri";
 import backgroundImage from '../assets/wallapaper.jpeg';
 import websocketService from "../services/websocket";
+import {setUser} from "../redux/actions";
+import toast from "react-hot-toast";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import {selectorUser} from "../redux/selectors";
-
 const tz = 'Asia/Ho_Chi_Minh';
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -140,6 +141,7 @@ const MessagePage = () => {
                 {/*all message show here*/}
                 <div className='flex flex-col gap-2 py-2 mx-2' ref={currentMessage}>
                     {
+
                         allMessage.map((msg) => {
                             let showDatetime = false;
                             if (prevMesCreateAt) {
@@ -148,19 +150,25 @@ const MessagePage = () => {
                                     showDatetime = true;
                                 }
                             }
+                            let timeSplit = msg.createAt.split(" ");
+                            let timeString = timeSplit[1];
+                            let [hours, minutes, seconds] = timeString.split(':').map(Number);
+                            hours = (hours + 7) % 24;
+                            let newTimeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
                             prevMesCreateAt = dayjs.utc(msg.createAt, 'DD/MM/YYYY HH:mm:ss').tz();
-                            let newTimeString = dayjs.utc(msg.createAt, 'HH:mm').tz();
-                            return (
+                            console.log(prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss'));
+                            return(
                                 <>
-                                    {showDatetime && <span
-                                        className="text-center">{prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss')}</span>}
+                                    {showDatetime && <span className= "text-center">{prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss')}</span>}
+
                                     <div key={msg.id}
                                          className={` p-1 py-1 rounded-full w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${userChat !== msg.name ? "ml-auto bg-teal-100" : "bg-white"}`}>
                                         <div className='px-2 relative inline-block group'>
                                             {msg.mes}
                                             <div
-                                                className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${userChat !== msg.name ? "right-full" : "left-full"} text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>
-                                                {newTimeString.format('HH:mm')}
+                                                className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${userChat !== msg.name ? "right-full" : "left-full" } text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>
+                                                {newTimeString}
+
                                             </div>
                                         </div>
                                     </div>

@@ -4,11 +4,13 @@ import Sidebar from "../components/Sidebar";
 import logo from "../assets/logo.png"
 import {useSelector} from "react-redux";
 import {selectorUser} from "../redux/selectors";
+import {useTranslation} from "react-i18next";
 const Home = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const basePath = location.pathname === "/";
     const user = useSelector(selectorUser);
+    const { t } = useTranslation();
 
     // auth
     useEffect(() => {
@@ -27,13 +29,13 @@ const Home = () => {
             </section>
 
             <div className={`justify-center items-center flex-col gap-2 hidden ${!basePath ? "hidden" : "lg:flex" }`}>
-                <div>
+                <div className="flex flex-col items-center">
                     <img
                         src={logo}
                         width={220}
                         alt='logo'
                     />
-                    <p className='text-lg mt-2 text-slate-500'>Select user to send message</p>
+                    <p className='text-lg mt-2 text-slate-500'>{t('select_user_to_send_message')}</p>
                 </div>
             </div>
         </div>

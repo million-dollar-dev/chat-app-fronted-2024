@@ -2,10 +2,13 @@ import React, {useEffect, useRef, useState} from 'react'
 import {IoClose, IoSearchOutline} from "react-icons/io5";
 import Loading from './Loading';
 import UserSearchCard from './UserSearchCard';
+import {useTranslation} from "react-i18next";
 
 const SearchUser = ({onClose}) => {
     const [loading, setLoading] = useState(false)
     const [search, setSearch] = useState("")
+    const { t } = useTranslation();
+
     // const inputRef = useRef()
     //
     //
@@ -20,7 +23,7 @@ const SearchUser = ({onClose}) => {
                     <input
                         type='text'
                         // ref={inputRef}
-                        placeholder='Search user by name'
+                        placeholder={t('search_user_by_name')}
                         className='w-full outline-none py-1 h-full px-4'
                         onChange={(e) => setSearch(e.target.value)}
                         value={search}
@@ -35,7 +38,7 @@ const SearchUser = ({onClose}) => {
                     {/**no user found */}
                     {
                         search.length === 0 && !loading && (
-                            <p className='text-center text-slate-500'>no user found!</p>
+                            <p className='text-center text-slate-500'>{t('no_user_found!')}</p>
                         )
                     }
                     {

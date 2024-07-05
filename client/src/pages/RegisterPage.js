@@ -4,6 +4,7 @@ import toast, {Toaster} from "react-hot-toast";
 import websocketService from "../services/websocket";
 import { useDispatch } from "react-redux";
 import {setUser} from "../redux/actions";
+import {useTranslation} from "react-i18next";
 
 const RegisterPage = () => {
   const navigate = useNavigate()
@@ -11,18 +12,20 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('')
   const [repeatPassword, setRepeatPassword] = useState('')
   const dispatch = useDispatch()
-  
-  const handleRegister = (e) => {
+    const { t } = useTranslation();
+
+
+    const handleRegister = (e) => {
     e.preventDefault()
     e.stopPropagation()
 
     if (username.length === 0 || password.length === 0 || repeatPassword.length === 0) {
-      toast.error('Please fill all form')
+      toast.error(t('please_fill_all_form'))
       return
     }
 
     if (!(password == repeatPassword)) {
-      toast.error('Make sure passwords match')
+      toast.error(t('make_sure_passwords_match'))
       return
     }
 
@@ -47,7 +50,7 @@ const RegisterPage = () => {
                 setUsername('');
                 setPassword('');
                 navigate('/');
-                toast.success('Register successfully')
+                toast.success(t('register_successfully'))
             } else {
                 setPassword('')
                 setRepeatPassword('')
@@ -64,20 +67,20 @@ const RegisterPage = () => {
       />
       <div className='bg-white w-full max-w-sm mx-2 rounded overflow-hidden p-4 mx-auto'>
       <h2 className="mt-2 text-center text-3xl font-extrabold text-gray-900">
-          Register
+          {t('register')}
         </h2>
         <h3 className="mt-2 text-center text-xl font-extrabold text-gray-900">
-          Welcome to Chat App!
+            {t('welcome_to_chat_app')}
         </h3>
         {/*<pre>{JSON.stringify(data, undefined, 2)}</pre>*/}
         <div className="grid gap-4 mt-5">
           <div className="flex flex-col gap-1">
-            <label htmlFor='name'>Username :</label>
+            <label htmlFor='name'>{t('username')}</label>
             <input
                 type='text'
                 id='username'
                 name='username'
-                placeholder='Enter your username'
+                placeholder={t('enter_your_username')}
                 className='bg-slate-100 px-2 py-1 focus:outline-primary'
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -85,12 +88,12 @@ const RegisterPage = () => {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor='email'>Password :</label>
+            <label htmlFor='email'>{t('password')}</label>
             <input
                 type='password'
                 id='password'
                 name='password'
-                placeholder='Enter your password'
+                placeholder={t('enter_your_password')}
                 className='bg-slate-100 px-2 py-1 focus:outline-primary'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -98,12 +101,12 @@ const RegisterPage = () => {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor='email'>Repeat Password :</label>
+            <label htmlFor='email'>{t('repeat_password')}</label>
             <input
                 type='password'
                 id='repeatPassword'
                 name='reatPassword'
-                placeholder='Repeat your password'
+                placeholder={t('repeat_your_password')}
                 className='bg-slate-100 px-2 py-1 focus:outline-primary'
                 value={repeatPassword}
                 onChange={(e) => setRepeatPassword(e.target.value)}
@@ -113,10 +116,10 @@ const RegisterPage = () => {
           <button className='bg-primary text-lg px-4 py-1 hover:bg-secondary rounded mt-2 text-white leading-relaxed tracking-wide'
                   onClick={handleRegister}
           >
-            Register
+              {t('register')}
           </button>
         </div>
-        <p className='my-3 text-center'>Already have account ? <Link to={"/login"} className='hover:text-primary font-semibold'>Login</Link></p>
+        <p className='my-3 text-center'>{t('already_have_account')} <Link to={"/login"} className='hover:text-primary font-semibold'>{t('login')} </Link></p>
 
 
       </div>
