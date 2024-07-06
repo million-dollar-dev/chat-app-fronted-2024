@@ -1,6 +1,6 @@
 import {Link, useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
-import {useEffect, useRef, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import Avatar from "./Avatar";
 import {FaAngleLeft} from "react-icons/fa";
 import {RiSendPlane2Fill} from "react-icons/ri";
@@ -12,6 +12,8 @@ import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import {selectorUser} from "../redux/selectors";
+import AllUserContext from "../context/AllUserContext";
+
 const tz = 'Asia/Ho_Chi_Minh';
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -24,6 +26,7 @@ const MessagePage = () => {
     const [allMessage, setAllMessage] = useState([]);
     const [message, setMessage] = useState("");
     const currentMessage = useRef(null);
+    const {allUser, setAllUser} = useContext(AllUserContext);
 
     const getAllMessage = (username) => {
         const data = {
@@ -42,8 +45,11 @@ const MessagePage = () => {
             console.log('get all res', response)
             if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success')
                 setAllMessage(response.data.reverse());
-            if (response.event === 'SEND_CHAT' && response.status === 'success')
+            if (response.event === 'SEND_CHAT' && response.status === 'success') {
                 handleUpdateMessage()
+                handleGetAllUser()
+            }
+                
         };
     }
 
@@ -62,15 +68,38 @@ const MessagePage = () => {
 
         websocketService.socket.onmessage = (message) => {
             const response = JSON.parse(message.data)
-            if (response.event === 'SEND_CHAT' && response.status === 'success')
+            if (response.event === 'SEND_CHAT' && response.status === 'success') {
+                console.log('koko')
                 handleUpdateMessage()
+                setAllUser([])
+                console.log('hahah')
+            }
+                
             else {
                 console.log('update res', response)
                 const lastMess = [...allMessage, response.data[0]];
                 console.log('last Mess', lastMess);
                 setAllMessage((allMessage) => [...allMessage, response.data[0]]);
+                handleGetAllUser()
+                console.log('All user getAll', allUser)
             }
         };
+    }
+
+    const handleGetAllUser = () => {
+        websocketService.send({
+            "action": "onchat",
+            "data": {
+                "event": "GET_USER_LIST"                
+            }
+        })
+        websocketService.socket.onmessage = (message) => {
+            const response = JSON.parse(message.data);
+            console.log(response);
+            if (response.event === 'GET_USER_LIST' && response.status === 'success' ) {
+                setAllUser(response.data)         
+            }
+        }
     }
 
     const handleSendMessage = (e) => {
