@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {IoChatbubbleEllipses} from "react-icons/io5";
 import {FaUserPlus} from "react-icons/fa";
 import {NavLink, useNavigate} from "react-router-dom";
@@ -14,13 +14,13 @@ import { logout } from "../redux/actions";
 import websocketService from "../services/websocket";
 import toast from "react-hot-toast";
 import {useTranslation} from "react-i18next";
-
+import AllUserContext from "../context/AllUserContext"
 
 
 const Sidebar = () => {
     const [openSearchUser, setOpenSearchUser] = useState(false)
     const [showPopup, setShowPopup] = useState(false);
-    const [allUser, setAllUser] = useState([])
+    const {allUser, setAllUser} = useContext(AllUserContext);
     const user = useSelector(selectorUser);
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -56,10 +56,11 @@ const Sidebar = () => {
         websocketService.socket.onmessage = (message) => {
             const response = JSON.parse(message.data);
             console.log(response);
-            if (response.event === 'GET_USER_LIST') {
-                if (response.status === 'success' )
-                    setAllUser(response.data)         
+            if (response.event === 'GET_USER_LIST' && response.status === 'success') {
+                setAllUser(response.data)         
             }
+            if (response.event === 'SEND_CHAT' && response.status === 'success')
+                handleGetAllUser()
         }
     }
 

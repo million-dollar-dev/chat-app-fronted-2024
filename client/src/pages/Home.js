@@ -1,17 +1,18 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Outlet, useLocation, useNavigate} from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import logo from "../assets/logo.png"
 import {useSelector} from "react-redux";
 import {selectorUser} from "../redux/selectors";
 import {useTranslation} from "react-i18next";
+import AllUserContext from "../context/AllUserContext";
 const Home = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const basePath = location.pathname === "/";
     const user = useSelector(selectorUser);
     const { t } = useTranslation();
-
+    const [allUser, setAllUser] = useState([])
     // auth
     useEffect(() => {
         if (user == '')
@@ -20,13 +21,15 @@ const Home = () => {
 
     return (
         <div className='grid lg: grid-cols-[300px,1fr] h-screen max-h-screen'>
-            <section className={`bg-white ${!basePath && "hidden"} lg:block`}>
-                <Sidebar></Sidebar>
-            </section>
-            {/*Message Component*/}
-            <section className={`${basePath && "hidden"}`}>
-                <Outlet></Outlet>
-            </section>
+            <AllUserContext.Provider value={{allUser, setAllUser}}>
+                <section className={`bg-white ${!basePath && "hidden"} lg:block`}>
+                    <Sidebar></Sidebar>
+                </section>
+                {/*Message Component*/}
+                <section className={`${basePath && "hidden"}`}>
+                    <Outlet></Outlet>
+                </section>
+            </AllUserContext.Provider>
 
             <div className={`justify-center items-center flex-col gap-2 hidden ${!basePath ? "hidden" : "lg:flex" }`}>
                 <div className="flex flex-col items-center">
