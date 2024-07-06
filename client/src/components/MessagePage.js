@@ -6,13 +6,12 @@ import {FaAngleLeft} from "react-icons/fa";
 import {RiSendPlane2Fill} from "react-icons/ri";
 import backgroundImage from '../assets/wallapaper.jpeg';
 import websocketService from "../services/websocket";
-import {setUser} from "../redux/actions";
-import toast from "react-hot-toast";
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import {selectorUser} from "../redux/selectors";
 import AllUserContext from "../context/AllUserContext";
+import {isBase64, decodeFromBase64, encodeToBase64} from "../utils/base64";
 
 const tz = 'Asia/Ho_Chi_Minh';
 dayjs.extend(utc);
@@ -49,7 +48,6 @@ const MessagePage = () => {
                 handleUpdateMessage()
                 handleGetAllUser()
             }
-                
         };
     }
 
@@ -73,9 +71,7 @@ const MessagePage = () => {
                 handleUpdateMessage()
                 setAllUser([])
                 console.log('hahah')
-            }
-                
-            else {
+            } else {
                 console.log('update res', response)
                 const lastMess = [...allMessage, response.data[0]];
                 console.log('last Mess', lastMess);
@@ -112,7 +108,7 @@ const MessagePage = () => {
                     "data": {
                         "type": "people",
                         "to": params.username,
-                        "mes": message
+                        "mes": encodeToBase64(message)
                     }
                 }
             };
@@ -190,7 +186,9 @@ const MessagePage = () => {
                                     <div key={msg.id}
                                          className={` p-1 py-1 rounded-full w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${userChat !== msg.name ? "ml-auto bg-teal-100" : "bg-white"}`}>
                                         <div className='px-2 relative inline-block group'>
-                                            {msg.mes}
+                                            {
+                                                isBase64(msg.mes) ? decodeFromBase64(msg.mes) : msg.mes
+                                            }
                                             <div
                                                 className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${userChat !== msg.name ? "right-full" : "left-full" } text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>
                                                 {newTimeString.format('HH:mm')}
@@ -222,7 +220,6 @@ const MessagePage = () => {
             </section>
         </div>
     )
-
 };
 
 export default MessagePage;
