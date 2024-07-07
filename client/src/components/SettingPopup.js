@@ -56,23 +56,15 @@ const SettingPopup = ({handleClose}) => {
                                             </a>
                                         </div>
                                     </div>
-                                    <ChangeLanguageButton/>
-
                                 </div>
                             </div>
                             <hr className="my-4 border-gray-300"/>
-                            <div className="mb-4">
-                                <h4 className="font-bold text-left">
-                                    {t('active_status')} <span>{t('ON')}</span>
+                            <div className="mb-4 flex flex-row justify-between items-center">
+                                <h4 className="font-bold text-center">
+                                    {t('change_language')}
                                 </h4>
+                                <ChangeLanguageButton/>
                             </div>
-                            {/*<hr className="my-4 border-gray-300"/>*/}
-                            {/*<div className="mb-4">*/}
-                            {/*    <h4 className="font-bold text-left">*/}
-                            {/*        {t('change_language')}*/}
-                            {/*    </h4>*/}
-                            {/*    <ChangeLanguageButton/>*/}
-                            {/*</div>*/}
                             <hr className="my-4 border-gray-300"/>
 
                             <div className="mb-4">
