@@ -41,12 +41,12 @@ const MessagePage = () => {
         websocketService.send(data);
         websocketService.socket.onmessage = (message) => {
             const response = JSON.parse(message.data);
-            console.log('get all res', response)
+            console.log('getAll method', response)
             if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success')
                 setAllMessage(response.data.reverse());
             if (response.event === 'SEND_CHAT' && response.status === 'success') {
+                updateUserListWhenReceiving(response.data.name)
                 handleUpdateMessage()
-                handleGetAllUser()
             }
         };
     }
@@ -66,23 +66,20 @@ const MessagePage = () => {
 
         websocketService.socket.onmessage = (message) => {
             const response = JSON.parse(message.data)
+            console.log('update mess method', response);
             if (response.event === 'SEND_CHAT' && response.status === 'success') {
-                console.log('koko')
+                updateUserListWhenReceiving(response.data.name)
                 handleUpdateMessage()
-                setAllUser([])
-                console.log('hahah')
-            } else {
-                console.log('update res', response)
-                const lastMess = [...allMessage, response.data[0]];
-                console.log('last Mess', lastMess);
+                
+            } if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success'){
+                console.log('cap nhat tin nhan')
                 setAllMessage((allMessage) => [...allMessage, response.data[0]]);
-                handleGetAllUser()
-                console.log('All user getAll', allUser)
+                                
             }
         };
     }
 
-    const handleGetAllUser = () => {
+    const handleUpdateUserList = () => {
         websocketService.send({
             "action": "onchat",
             "data": {
@@ -91,11 +88,26 @@ const MessagePage = () => {
         })
         websocketService.socket.onmessage = (message) => {
             const response = JSON.parse(message.data);
-            console.log(response);
+            console.log('update list method', response);
             if (response.event === 'GET_USER_LIST' && response.status === 'success' ) {
-                setAllUser(response.data)         
+                setAllUser(response.data)
+            }
+            if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success'){
+                setAllMessage((allMessage) => [...allMessage, response.data[0]]);              
+            }
+            if (response.event === 'SEND_CHAT' && response.status === 'success') {
+                updateUserListWhenReceiving(response.data.name)
+                handleUpdateMessage()        
             }
         }
+    }
+
+
+    const updateUserListWhenReceiving = (sender) => {
+        const updateList = [...allUser];
+        const list = updateList.filter(item => item.name !== sender);
+        list[0].name = sender
+        setAllUser(list)
     }
 
     const handleSendMessage = (e) => {
@@ -118,6 +130,7 @@ const MessagePage = () => {
                 console.log('send res', response)
             };
             handleUpdateMessage();
+            handleUpdateUserList()
             setMessage("");
         }
     }

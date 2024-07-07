@@ -136,20 +136,22 @@ const Sidebar = () => {
                         )
                     }
                     {
-                        allUser.map((user, index) => {
+                        allUser
+                            .filter(item => item.name !== user)
+                            .map((item, index) => {
                             return (
-                                <NavLink key={index} to={"/" + user.name} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer'>
+                                <NavLink key={index} to={"/" + item.name} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer'>
                                     <div>
                                         <Avatar                                        
-                                            username={user.name}
+                                            username={item.name}
                                             width={40}
                                             height={40}
                                         />    
                                     </div>
                                     <div>
-                                        <h3 className='text-ellipsis line-clamp-1 font-semibold text-base'>{user.name}</h3>
+                                        <h3 className='text-ellipsis line-clamp-1 font-semibold text-base'>{item.name}</h3>
                                         <div className='text-slate-500 text-xs flex items-center gap-1'>
-                                            <p className='text-ellipsis line-clamp-1'>{user.actionTime}</p>
+                                            <p className='text-ellipsis line-clamp-1'>{item.actionTime}</p>
                                         </div>
                                     </div>
                                     
