@@ -17,6 +17,7 @@ const tz = 'Asia/Ho_Chi_Minh';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.tz.setDefault(tz);
+const now = dayjs()
 
 const MessagePage = () => {
     const params = useParams();
@@ -45,8 +46,8 @@ const MessagePage = () => {
             if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success')
                 setAllMessage(response.data.reverse());
             if (response.event === 'SEND_CHAT' && response.status === 'success') {
-                updateUserListWhenReceiving(response.data.name)
                 handleUpdateMessage()
+                updateUserList(response.data.name, now.format('YYYY-MM-DD HH:mm:ss'))
             }
         };
     }
@@ -68,48 +69,23 @@ const MessagePage = () => {
             const response = JSON.parse(message.data)
             console.log('update mess method', response);
             if (response.event === 'SEND_CHAT' && response.status === 'success') {
-                updateUserListWhenReceiving(response.data.name)
                 handleUpdateMessage()
-                
+                updateUserList(response.data.name, now.format('YYYY-MM-DD HH:mm:ss'))             
             } if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success'){
                 console.log('cap nhat tin nhan')
-                setAllMessage((allMessage) => [...allMessage, response.data[0]]);
-                                
-            }
+                setAllMessage((allMessage) => [...allMessage, response.data[0]]);           
+            }            
         };
     }
 
-    const handleUpdateUserList = () => {
-        websocketService.send({
-            "action": "onchat",
-            "data": {
-                "event": "GET_USER_LIST"                
-            }
-        })
-        websocketService.socket.onmessage = (message) => {
-            const response = JSON.parse(message.data);
-            console.log('update list method', response);
-            if (response.event === 'GET_USER_LIST' && response.status === 'success' ) {
-                setAllUser(response.data)
-            }
-            if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success'){
-                setAllMessage((allMessage) => [...allMessage, response.data[0]]);              
-            }
-            if (response.event === 'SEND_CHAT' && response.status === 'success') {
-                updateUserListWhenReceiving(response.data.name)
-                handleUpdateMessage()        
-            }
-        }
+    const updateUserList = (username, time) => {
+        console.log('reciever', username)
+        console.log('time', time)        
+        const filterList = allUser.filter(item => item.name !== username)
+        console.log(filterList)
+        setAllUser([{name: username, actionTime: time}, ...filterList])
     }
-
-
-    const updateUserListWhenReceiving = (sender) => {
-        const updateList = [...allUser];
-        const list = updateList.filter(item => item.name !== sender);
-        list[0].name = sender
-        setAllUser(list)
-    }
-
+    
     const handleSendMessage = (e) => {
         e.preventDefault()
         if (message) {
@@ -130,7 +106,7 @@ const MessagePage = () => {
                 console.log('send res', response)
             };
             handleUpdateMessage();
-            handleUpdateUserList()
+            updateUserList(params.username, now.format('YYYY-MM-DD HH:mm:ss'))
             setMessage("");
         }
     }
