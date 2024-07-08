@@ -12,6 +12,7 @@ import timezone from 'dayjs/plugin/timezone';
 import {selectorUser} from "../redux/selectors";
 import AllUserContext from "../context/AllUserContext";
 import {isBase64, decodeFromBase64, encodeToBase64} from "../utils/base64";
+import EmojiPicker from "./EmojiPicker";
 
 const tz = 'Asia/Ho_Chi_Minh';
 dayjs.extend(utc);
@@ -111,6 +112,10 @@ const MessagePage = () => {
         }
     }
 
+    const handleAddEmoji = (value) => {
+        setMessage(message + value);
+    }
+
     useEffect(() => {
         setUserChat(params.username);
         if (user) {
@@ -202,9 +207,15 @@ const MessagePage = () => {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                     />
-                    <button className='text-primary hover:text-secondary'>
+
+                    <button className='text-primary hover:text-secondary' type="button" >
+                        <EmojiPicker size={28} onSelectEmoji={handleAddEmoji} />
+                    </button>
+                    <button className='text-primary hover:text-secondary' type="submit">
                         <RiSendPlane2Fill size={28}/>
                     </button>
+
+
                 </form>
             </section>
         </div>
