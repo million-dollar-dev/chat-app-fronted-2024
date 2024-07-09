@@ -16,7 +16,7 @@ const EmojiPicker = ({ onSelectEmoji }) => {
         <div className="relative inline-block">
             <button
                 onClick={() => setPickerVisible(!isPickerVisible)}
-                className="p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 bg-gray-200 hover:bg-gray-300"
+                className="p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hover:hover:bg-slate-200"
                 type="button"
             >
                 <FaSmile className="h-6 w-6 text-primary" />

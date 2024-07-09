@@ -13,6 +13,9 @@ import {selectorUser} from "../redux/selectors";
 import AllUserContext from "../context/AllUserContext";
 import {isBase64, decodeFromBase64, encodeToBase64} from "../utils/base64";
 import EmojiPicker from "./EmojiPicker";
+import {FaImage, FaPlus, FaVideo} from "react-icons/fa6";
+import uploadFile from "../utils/uploadFile";
+import Loading from "./Loading";
 
 const tz = 'Asia/Ho_Chi_Minh';
 dayjs.extend(utc);
@@ -28,6 +31,10 @@ const MessagePage = () => {
     const [message, setMessage] = useState("");
     const currentMessage = useRef(null);
     const {allUser, setAllUser} = useContext(AllUserContext);
+    const [openImageVideoUpload,setOpenImageVideoUpload] = useState(false);
+    const [loading,setLoading] = useState(false);
+    const uploadImageVideoRef = useRef();
+    const plusIconRef = useRef();
 
     const getAllMessage = (username) => {
         const data = {
@@ -74,7 +81,7 @@ const MessagePage = () => {
                 updateUserList(response.data.name, now.format('YYYY-MM-DD HH:mm:ss'))             
             } if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success'){
                 console.log('cap nhat tin nhan')
-                setAllMessage((allMessage) => [...allMessage, response.data[0]]);           
+                setAllMessage((allMessage) => [...allMessage, response.data[0]]);
             }            
         };
     }
@@ -112,6 +119,37 @@ const MessagePage = () => {
         }
     }
 
+    const handleUploadFile = async(e)=>{
+        const file = e.target.files[0];
+        console.log('upfile', file)
+
+        if (file) {
+            setLoading(true);
+            const uploadPhoto = await uploadFile(file);
+            const imageUrl = uploadPhoto.url;
+            setLoading(false)
+            setOpenImageVideoUpload(false)
+            const messageData = {
+                "action": "onchat",
+                "data": {
+                    "event": "SEND_CHAT",
+                    "data": {
+                        "type": "people",
+                        "to": params.username,
+                        "mes": imageUrl
+                    }
+                }
+            };
+            console.log(imageUrl)
+            websocketService.send(messageData);
+            handleUpdateMessage();
+        }
+    }
+
+    const isImageUrl = (text) => {
+        return text.startsWith('http://res.cloudinary.com/dkexnsrcg') || text.startsWith('https://res.cloudinary.com/dkexnsrcg');
+    };
+
     const handleAddEmoji = (value) => {
         setMessage(message + value);
     }
@@ -129,8 +167,31 @@ const MessagePage = () => {
         }
     }, [allMessage])
 
-    let prevMesCreateAt;
+    useEffect(() => {
+       const handleClickOutside = (e) => {
+           if (uploadImageVideoRef.current && !uploadImageVideoRef.current.contains(e.target) && !plusIconRef.current.contains(e.target)){
+               setOpenImageVideoUpload(false)
+           }
 
+       }
+       document.addEventListener('mousedown',handleClickOutside);
+    });
+
+    const processMessage = (message) => {
+        if (isBase64(message)) {
+            return decodeFromBase64(message);
+        } else if (isImageUrl(message)) {
+            return <img
+                    src={message}
+                    className='w-full h-full object-scale-down'
+                    />;
+        } else {
+            return message;
+        }
+    };
+
+    let prevMesCreateAt, decodeMessage;
+    const hasMessage = message.length > 0;
     return (
         <div style={{backgroundImage: `url(${backgroundImage})`}} className='bg-no-repeat bg-cover'>
             <header className='sticky top-0 h-16 bg-white flex justify-between items-center px-4'>
@@ -173,18 +234,19 @@ const MessagePage = () => {
                             }
                             prevMesCreateAt = dayjs.utc(msg.createAt, 'DD/MM/YYYY HH:mm:ss').tz();
                             let newTimeString = dayjs.utc(msg.createAt, 'HH:mm').tz();
-                            return(
-                                <>
-                                    {showDatetime && <span className= "text-center">{prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss')}</span>}
 
+                            return (
+                                <>
+                                    {showDatetime && <span
+                                        className="text-center">{prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss')}</span>}
                                     <div key={msg.id}
-                                         className={` p-1 py-1 rounded-full w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${userChat !== msg.name ? "ml-auto bg-teal-100" : "bg-white"}`}>
+                                         className={`p-1 ${isImageUrl(msg.mes)? "rounded-lg" : "rounded-full"} w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${userChat !== msg.name ? "ml-auto bg-teal-100" : "bg-white"}`}>
                                         <div className='px-2 relative inline-block group'>
                                             {
-                                                isBase64(msg.mes) ? decodeFromBase64(msg.mes) : msg.mes
+                                                processMessage(msg.mes)
                                             }
                                             <div
-                                                className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${userChat !== msg.name ? "right-full" : "left-full" } text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>
+                                                className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${userChat !== msg.name ? "right-full" : "left-full"} text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>
                                                 {newTimeString.format('HH:mm')}
                                             </div>
                                         </div>
@@ -194,28 +256,111 @@ const MessagePage = () => {
                         })
                     }
                 </div>
+                {
+                    loading && (
+                        <div className='w-full h-full flex sticky bottom-0 justify-center items-center'>
+                            <Loading/>
+                        </div>
+                    )
+                }
             </section>
 
             {/*send message*/}
             <section className='h-16 bg-white flex items-center px-4'>
-                {/**input box */}
-                <form className='h-full w-full flex gap-2' onSubmit={handleSendMessage}>
-                    <input
-                        type='text'
-                        placeholder='Type here message...'
-                        className='py-1 px-4 outline-none w-full h-full'
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                    />
+                <div className='relative flex gap-2'>
+                    {hasMessage ? (
+                        <>
+                            <button
+                                ref={plusIconRef}
+                                onClick={() => setOpenImageVideoUpload(!openImageVideoUpload)}
+                                className='flex justify-center items-center w-8 h-8 rounded-full hover:bg-primary hover:text-white transition-all duration-300 ease-in-out'>
+                                <FaPlus size={20}/>
+                            </button>
+                            {
+                                openImageVideoUpload && (
+                                    <div
+                                        ref={uploadImageVideoRef}
+                                        className='bg-white shadow rounded absolute bottom-14 w-36 p-2'>
+                                        <form>
+                                            <label htmlFor='uploadVideoExt'
+                                                   className='flex items-center p-2 px-3 gap-3 hover:bg-slate-200 cursor-pointer'>
+                                                <div className='text-purple-500'>
+                                                    <FaVideo size={18}/>
+                                                </div>
+                                                <p>Video</p>
+                                            </label>
+                                            <label htmlFor='uploadImageExt'
+                                                   className='flex items-center p-2 px-3 gap-3 hover:bg-slate-200 cursor-pointer'>
+                                                <div className='text-primary'>
+                                                    <FaImage size={18}/>
+                                                </div>
+                                                <p>Image</p>
+                                            </label>
 
-                    <button className='text-primary hover:text-secondary' type="button" >
-                        <EmojiPicker size={28} onSelectEmoji={handleAddEmoji} />
-                    </button>
+
+                                            <input
+                                                type='file'
+                                                id='uploadImageExt'
+                                                onChange={handleUploadFile}
+                                                className='hidden'
+                                            />
+
+                                            <input
+                                                type='file'
+                                                id='uploadVideoExt'
+                                                className='hidden'
+                                            />
+                                        </form>
+                                    </div>
+                                )
+                            }
+                        </>
+                    ) : (
+                        <form className='flex'>
+                            <label htmlFor='uploadVideo'>
+                                <div
+                                    className='text-purple-500 flex justify-center items-center w-8 h-8 rounded-full hover:bg-slate-200 transition-all duration-300 ease-in-out'>
+                                <FaVideo size={20}/>
+                                </div>
+                            </label>
+                            <label htmlFor='uploadImage'>
+                                <div
+                                    className='text-primary flex justify-center items-center w-8 h-8 rounded-full hover:bg-slate-200 transition-all duration-300 ease-in-out'>
+                                    <FaImage size={20}/>
+                                </div>
+                            </label>
+                            <input
+                                type='file'
+                                id='uploadImage'
+                                onChange={handleUploadFile}
+                                className='hidden'
+                            />
+                            <input
+                                type='file'
+                                id='uploadVideo'
+                                className='hidden'
+                            />
+                        </form>
+                    )}
+                </div>
+
+                {/** input box */}
+                <form className='h-full w-full flex gap-2 items-center' onSubmit={handleSendMessage}>
+                    <div className='h-10 flex items-center bg-gray-100 rounded-full flex-grow'>
+                        <input
+                            type='text'
+                            placeholder='Type here message...'
+                            className='bg-transparent outline-none flex-grow p-2 text-gray-700'
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                        />
+                        <button className='text-blue-500' type="button">
+                            <EmojiPicker size={28} onSelectEmoji={handleAddEmoji}/>
+                        </button>
+                    </div>
                     <button className='text-primary hover:text-secondary' type="submit">
                         <RiSendPlane2Fill size={28}/>
                     </button>
-
-
                 </form>
             </section>
         </div>
