@@ -29,6 +29,7 @@
   "welcome_to_chat_app": "チャットアプリへようこそ！",
   "repeat_password": "パスワードを再入力：",
   "repeat_your_password": "パスワードを再入力してください",
-  "already_have_account": "すでにアカウントを持っていますか？"
+  "already_have_account": "すでにアカウントを持っていますか？",
+  "Type_here_message": "ここにメッセージを入力..."
 }
 

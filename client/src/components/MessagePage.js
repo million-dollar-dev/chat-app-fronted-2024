@@ -17,6 +17,7 @@ import {FaImage, FaPlus, FaVideo} from "react-icons/fa6";
 import uploadFile from "../utils/uploadFile";
 import Loading from "./Loading";
 import { playNotificationEffect, showTitleNotification } from "../utils/notify"
+import {useTranslation} from "react-i18next";
 
 const tz = 'Asia/Ho_Chi_Minh';
 dayjs.extend(utc);
@@ -34,8 +35,10 @@ const MessagePage = () => {
     const {allUser, setAllUser} = useContext(AllUserContext);
     const [openImageVideoUpload,setOpenImageVideoUpload] = useState(false);
     const [loading,setLoading] = useState(false);
+    const [position,setPosition] = useState([]);
     const uploadImageVideoRef = useRef();
     const plusIconRef = useRef();
+    const { t } = useTranslation();
 
     const getAllMessage = (username) => {
         const data = {
@@ -156,7 +159,21 @@ const MessagePage = () => {
     };
 
     const handleAddEmoji = (value) => {
-        setMessage(message + value);
+        console.log(position, position.length);
+        if (position.length === 2) {
+            const startPos = position[0];
+            const endPos = position[1];
+
+            const currentMessage = message || "";
+            console.log(currentMessage?.substring(0, startPos));
+            console.log(currentMessage?.substring(endPos, currentMessage.length));
+            const insertedMessage = currentMessage?.substring(0, startPos)
+                + value
+                + currentMessage?.substring(endPos, currentMessage.length);
+            setMessage(insertedMessage);
+        } else {
+            setMessage(message + value);
+        }
     }
 
     useEffect(() => {
@@ -194,6 +211,26 @@ const MessagePage = () => {
             return message;
         }
     };
+
+    const getCurrentCursor = (e) => {
+        console.log(e);
+        console.log(e.target.selectionStart, e.target.selectionEnd);
+        console.log(window.getSelection());
+        console.log(document?.getSelection());
+
+        if (e.target.selectionStart !== null) {
+            const startPos = e.target.selectionStart;
+            const endPos = e.target.selectionEnd;
+            setPosition([startPos, endPos]);
+        } else {
+            setPosition([]);
+        }
+    }
+
+    const handleTypingMessage = (e) => {
+        setMessage(e.target.value);
+        getCurrentCursor(e);
+    }
 
     let prevMesCreateAt, decodeMessage;
     const hasMessage = message.length > 0;
@@ -354,10 +391,15 @@ const MessagePage = () => {
                     <div className='h-10 flex items-center bg-gray-100 rounded-full flex-grow'>
                         <input
                             type='text'
-                            placeholder='Type here message...'
+                            placeholder={t('Type_here_message')}
                             className='bg-transparent outline-none flex-grow p-2 text-gray-700'
                             value={message}
-                            onChange={(e) => setMessage(e.target.value)}
+                            // onChange={(e) => setMessage(e.target.value)}
+                            onChange={handleTypingMessage}
+                            onClick={getCurrentCursor}
+                            onKeyUp={getCurrentCursor}
+                            onKeyDown={getCurrentCursor}
+                            // onBlur={resetCursorPosition}
                         />
                         <button className='text-blue-500' type="button">
                             <EmojiPicker size={28} onSelectEmoji={handleAddEmoji}/>
