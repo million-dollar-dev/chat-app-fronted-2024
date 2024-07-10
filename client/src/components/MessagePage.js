@@ -16,6 +16,7 @@ import EmojiPicker from "./EmojiPicker";
 import {FaImage, FaPlus, FaVideo} from "react-icons/fa6";
 import uploadFile from "../utils/uploadFile";
 import Loading from "./Loading";
+import { playNotificationEffect, showTitleNotification } from "../utils/notify"
 
 const tz = 'Asia/Ho_Chi_Minh';
 dayjs.extend(utc);
@@ -55,7 +56,9 @@ const MessagePage = () => {
                 setAllMessage(response.data.reverse());
             if (response.event === 'SEND_CHAT' && response.status === 'success') {
                 handleUpdateMessage()
-                updateUserList(response.data.name, now.format('YYYY-MM-DD HH:mm:ss'))
+                playNotificationEffect()
+                showTitleNotification()
+                updateUserList(response.data.name, now.format('YYYY-MM-DD HH:mm:ss'), true)
             }
         };
     }
@@ -78,7 +81,9 @@ const MessagePage = () => {
             console.log('update mess method', response);
             if (response.event === 'SEND_CHAT' && response.status === 'success') {
                 handleUpdateMessage()
-                updateUserList(response.data.name, now.format('YYYY-MM-DD HH:mm:ss'))             
+                playNotificationEffect()
+                showTitleNotification()
+                updateUserList(response.data.name, now.format('YYYY-MM-DD HH:mm:ss'), true)             
             } if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success'){
                 console.log('cap nhat tin nhan')
                 setAllMessage((allMessage) => [...allMessage, response.data[0]]);
@@ -86,12 +91,12 @@ const MessagePage = () => {
         };
     }
 
-    const updateUserList = (username, time) => {
+    const updateUserList = (username, time, isReceiver) => {
         console.log('reciever', username)
         console.log('time', time)        
         const filterList = allUser.filter(item => item.name !== username)
         console.log(filterList)
-        setAllUser([{name: username, actionTime: time}, ...filterList])
+        setAllUser([{name: username, actionTime: time, isNewMessage: isReceiver}, ...filterList])
     }
     
     const handleSendMessage = (e) => {
@@ -114,7 +119,7 @@ const MessagePage = () => {
                 console.log('send res', response)
             };
             handleUpdateMessage();
-            updateUserList(params.username, now.format('YYYY-MM-DD HH:mm:ss'))
+            updateUserList(params.username, now.format('YYYY-MM-DD HH:mm:ss'), false)
             setMessage("");
         }
     }

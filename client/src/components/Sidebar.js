@@ -15,7 +15,7 @@ import websocketService from "../services/websocket";
 import toast from "react-hot-toast";
 import {useTranslation} from "react-i18next";
 import AllUserContext from "../context/AllUserContext"
-
+import { clearTitleNotification } from "../utils/notify";
 
 const Sidebar = () => {
     const [openSearchUser, setOpenSearchUser] = useState(false)
@@ -62,6 +62,14 @@ const Sidebar = () => {
             if (response.event === 'SEND_CHAT' && response.status === 'success')
                 handleGetAllUser()
         }
+    }
+
+    const hanleClickUserCard = (username) => {
+        const updateList = allUser.map(item => 
+            item.name === username ? {...item, isNewMessage: false} : item
+        )
+        clearTitleNotification()
+        setAllUser(updateList)
     }
 
     useEffect(() => {
@@ -140,7 +148,11 @@ const Sidebar = () => {
                             .filter(item => item.name !== user)
                             .map((item, index) => {
                             return (
-                                <NavLink key={index} to={"/" + item.name} className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer'>
+                                <NavLink 
+                                    key={index} 
+                                    to={"/" + item.name}
+                                    onClick={() => hanleClickUserCard(item.name)} 
+                                    className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer'>
                                     <div>
                                         <Avatar                                        
                                             username={item.name}
@@ -154,6 +166,14 @@ const Sidebar = () => {
                                             <p className='text-ellipsis line-clamp-1'>{item.actionTime}</p>
                                         </div>
                                     </div>
+                                    {
+                                        item.isNewMessage && (
+                                            <span class="ml-10 relative flex h-3 w-3">
+                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                                <span span class="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                                            </span>
+                                        )
+                                    }
                                     
                                 </NavLink>
                             )
