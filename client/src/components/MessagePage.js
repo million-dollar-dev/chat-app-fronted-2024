@@ -58,7 +58,8 @@ const MessagePage = () => {
             if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success')
                 setAllMessage(response.data.reverse());
             if (response.event === 'SEND_CHAT' && response.status === 'success') {
-                handleUpdateMessage()
+                if (response.data.name === params.username)
+                    handleUpdateMessage()
                 playNotificationEffect()
                 showTitleNotification()
                 updateUserList(response.data.name, now.format('YYYY-MM-DD HH:mm:ss'), true)
@@ -83,7 +84,8 @@ const MessagePage = () => {
             const response = JSON.parse(message.data)
             console.log('update mess method', response);
             if (response.event === 'SEND_CHAT' && response.status === 'success') {
-                handleUpdateMessage()
+                if (response.data.name === params.username)
+                    handleUpdateMessage()
                 playNotificationEffect()
                 showTitleNotification()
                 updateUserList(response.data.name, now.format('YYYY-MM-DD HH:mm:ss'), true)             
@@ -133,8 +135,8 @@ const MessagePage = () => {
 
         if (file) {
             setLoading(true);
-            const uploadPhoto = await uploadFile(file);
-            const imageUrl = uploadPhoto.url;
+            const uploadedFile = await uploadFile(file);
+            const fileUrl = uploadedFile.url;
             setLoading(false)
             setOpenImageVideoUpload(false)
             const messageData = {
@@ -144,29 +146,30 @@ const MessagePage = () => {
                     "data": {
                         "type": "people",
                         "to": params.username,
-                        "mes": imageUrl
+                        "mes": fileUrl
                     }
                 }
             };
-            console.log(imageUrl)
+            console.log(fileUrl)
             websocketService.send(messageData);
             handleUpdateMessage();
         }
     }
 
-    const isImageUrl = (text) => {
-        return text.startsWith('http://res.cloudinary.com/dkexnsrcg') || text.startsWith('https://res.cloudinary.com/dkexnsrcg');
+    const isFileUrl = (url) => {
+        return url.startsWith('http://res.cloudinary.com/dkexnsrcg') || url.startsWith('https://res.cloudinary.com/dkexnsrcg');
     };
 
+    const isImageUrl = (url) => {
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff'];
+        return imageExtensions.some(extension => url.toLowerCase().endsWith(extension));
+    }
+
     const handleAddEmoji = (value) => {
-        console.log(position, position.length);
         if (position.length === 2) {
             const startPos = position[0];
             const endPos = position[1];
-
             const currentMessage = message || "";
-            console.log(currentMessage?.substring(0, startPos));
-            console.log(currentMessage?.substring(endPos, currentMessage.length));
             const insertedMessage = currentMessage?.substring(0, startPos)
                 + value
                 + currentMessage?.substring(endPos, currentMessage.length);
@@ -202,22 +205,29 @@ const MessagePage = () => {
     const processMessage = (message) => {
         if (isBase64(message)) {
             return decodeFromBase64(message);
-        } else if (isImageUrl(message)) {
-            return <img
+        }
+        if (isFileUrl(message)) {
+            if (isImageUrl(message)) {
+                return (
+                    <img
+                        src={message}
+                        className='w-full h-full object-scale-down'
+                        alt='Image'
+                    />
+                );
+            }
+            return (
+                <video
                     src={message}
                     className='w-full h-full object-scale-down'
-                    />;
-        } else {
-            return message;
+                    controls
+                />
+            );
         }
+        return message;
     };
 
     const getCurrentCursor = (e) => {
-        console.log(e);
-        console.log(e.target.selectionStart, e.target.selectionEnd);
-        console.log(window.getSelection());
-        console.log(document?.getSelection());
-
         if (e.target.selectionStart !== null) {
             const startPos = e.target.selectionStart;
             const endPos = e.target.selectionEnd;
@@ -282,7 +292,7 @@ const MessagePage = () => {
                                     {showDatetime && <span
                                         className="text-center">{prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss')}</span>}
                                     <div key={msg.id}
-                                         className={`p-1 ${isImageUrl(msg.mes)? "rounded-lg" : "rounded-full"} w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${userChat !== msg.name ? "ml-auto bg-teal-100" : "bg-white"}`}>
+                                         className={`p-1 ${isFileUrl(msg.mes)? "rounded-lg" : "rounded-full"} w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${userChat !== msg.name ? "ml-auto bg-teal-100" : "bg-white"}`}>
                                         <div className='px-2 relative inline-block group'>
                                             {
                                                 processMessage(msg.mes)
@@ -338,18 +348,16 @@ const MessagePage = () => {
                                                 </div>
                                                 <p>Image</p>
                                             </label>
-
-
                                             <input
                                                 type='file'
                                                 id='uploadImageExt'
                                                 onChange={handleUploadFile}
                                                 className='hidden'
                                             />
-
                                             <input
                                                 type='file'
                                                 id='uploadVideoExt'
+                                                onChange={handleUploadFile}
                                                 className='hidden'
                                             />
                                         </form>
@@ -380,6 +388,7 @@ const MessagePage = () => {
                             <input
                                 type='file'
                                 id='uploadVideo'
+                                onChange={handleUploadFile}
                                 className='hidden'
                             />
                         </form>
