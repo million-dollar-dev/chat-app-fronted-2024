@@ -15,7 +15,10 @@ const EmojiPicker = ({ onSelectEmoji }) => {
     return (
         <div className="relative inline-block">
             <button
-                onClick={() => setPickerVisible(!isPickerVisible)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setPickerVisible(!isPickerVisible)
+                }}
                 className="p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hover:hover:bg-slate-200"
                 type="button"
             >
@@ -30,6 +33,7 @@ const EmojiPicker = ({ onSelectEmoji }) => {
                             addEmoji(emoji);
                         }}
                         navPosition="top"
+                        onClickOutside={() =>setPickerVisible(false)}
                     />
                 </div>
             )}
