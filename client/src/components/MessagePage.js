@@ -169,10 +169,10 @@ const MessagePage = () => {
         if (position.length === 2) {
             const startPos = position[0];
             const endPos = position[1];
-            const currentMessage = message || "";
-            const insertedMessage = currentMessage?.substring(0, startPos)
+            const cmessage = message || "";
+            const insertedMessage = cmessage?.substring(0, startPos)
                 + value
-                + currentMessage?.substring(endPos, currentMessage.length);
+                + cmessage?.substring(endPos, cmessage.length);
             setMessage(insertedMessage);
         } else {
             setMessage(message + value);
@@ -292,11 +292,13 @@ const MessagePage = () => {
                                     {showDatetime && <span
                                         className="text-center">{prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss')}</span>}
                                     <div key={msg.id}
-                                         className={`p-1 ${isFileUrl(msg.mes)? "rounded-lg" : "rounded-full"} w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${userChat !== msg.name ? "ml-auto bg-teal-100" : "bg-white"}`}>
-                                        <div className='px-2 relative inline-block group'>
-                                            {
-                                                processMessage(msg.mes)
-                                            }
+                                         className={`p1 ${isFileUrl(msg.mes) ? "rounded-lg" : "rounded-xl"} w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${userChat !== msg.name ? "ml-auto bg-teal-100" : "bg-white"}`}>
+                                        <div className='relative inline-block group'>
+                                            <div className='break-all px-2 py-1'>
+                                                {
+                                                    processMessage(msg.mes)
+                                                }
+                                            </div>
                                             <div
                                                 className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${userChat !== msg.name ? "right-full" : "left-full"} text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>
                                                 {newTimeString.format('HH:mm')}

@@ -22,7 +22,7 @@ const Home = () => {
     return (
         <div className='grid lg: grid-cols-[300px,1fr] h-screen max-h-screen'>
             <AllUserContext.Provider value={{allUser, setAllUser}}>
-                <section className={`bg-white ${!basePath && "hidden"} lg:block`}>
+                <section className={`bg-gray-900 ${!basePath && "hidden"} lg:block`}>
                     <Sidebar></Sidebar>
                 </section>
                 {/*Message Component*/}
@@ -31,7 +31,7 @@ const Home = () => {
                 </section>
             </AllUserContext.Provider>
 
-            <div className={`justify-center items-center flex-col gap-2 hidden ${!basePath ? "hidden" : "lg:flex" }`}>
+            <div className={`bg-gray-900  justify-center items-center flex-col gap-2 hidden ${!basePath ? "hidden" : "lg:flex" }`}>
                 <div className="flex flex-col items-center">
                     <img
                         src={logo}
