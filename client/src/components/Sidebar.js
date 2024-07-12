@@ -76,26 +76,43 @@ const Sidebar = () => {
         if (user)
             handleGetAllUser()
     }, [user])
+
+    const SidebarIcon = ({icon, text = 'tooltip 💡'}) => (
+        <div className="sidebar-icon group">
+            {icon}
+            <span className="sidebar-tooltip group-hover:scale-100">
+      {text}
+    </span>
+        </div>
+    );
+
+    const Divider = () => <hr className="sidebar-hr" />;
     return (
-        <div className='w-full h-full grid grid-cols-[48px,1fr] bg-white'>
+        <div className='w-full h-full grid grid-cols-[48px,1fr] bg-gray'>
             <div
-                className='bg-slate-100 w-12 h-full rounded-tr-lg rounded-br-lg py-5 text-slate-600 flex flex-col justify-between'>
+                className='bg-gray-900 w-15 h-full rounded-tr-lg rounded-br-lg  text-slate-600 flex flex-col justify-between '>
                 <div>
                     <NavLink
-                        className={({isActive}) => `w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded ${isActive && 'bg-slate-200'}`}
+                        className={({isActive}) => ` ${isActive && 'bg-gray-900'}`}
                         title='chat'>
-                        <IoChatbubbleEllipses
-                            size={25}
-                        />
+                        <SidebarIcon icon={<IoChatbubbleEllipses size="25" />} />
                     </NavLink>
-
+                    <Divider />
                     <div title='add friend'
-                         onClick={() => setOpenSearchUser(true)}
-                         className='w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded'>
-                        <FaUserPlus
-                            size={25}
-                        />
+                         onClick={() => setOpenSearchUser(true)}>
+                        <SidebarIcon icon={<FaUserPlus size="25" />} />
                     </div>
+                    {/*button setting*/}
+                    <button title='setting' onClick={togglePopup}>
+                        <SidebarIcon icon={<IoSettingsOutline size="25" />} />
+                    </button>
+                    <Divider />
+                    <button title='logout'
+                            onClick={handleLogout}
+                    >
+                        <SidebarIcon icon={<BiLogOut size="25" />} />
+                    </button>
+
                 </div>
 
                 <div className='flex flex-col items-center'>
@@ -106,34 +123,18 @@ const Sidebar = () => {
                             username={user}
                         />
                     </button>
-                    {/*button setting*/}
-                    <button title='setting' onClick={togglePopup}
-                            className='w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded'>
-                            <span className='-ml-2'>
-                            <IoSettingsOutline size={25}/>
-                            </span>
-                    </button>
-
-                    <button title='logout'
-                            className='w-12 h-12 flex justify-center items-center cursor-pointer hover:bg-slate-200 rounded'
-                            onClick={handleLogout}
-                    >
-                            <span className='-ml-2'>
-                            <BiLogOut size={25}/>
-                            </span>
-                    </button>
                 </div>
             </div>
-            <div className='w-full '>
+            <div className='w-full bg-gray-800'>
                 <div className='h-16 flex items-center'>
-                    <h2 className='text-xl font-bold p-4 text-slate-800'>Message</h2>
+                    <h2 className='text-xl font-bold p-4 text-slate-300'>Message</h2>
                 </div>
-                <div className='bg-slate-200 p-[0.5px]'></div>
+                <div className='bg-slate-700 p-[0.5px]'></div>
                 <div className=' h-[calc(100vh-65px)] overflow-x-hidden overflow-y-auto scrollbar'>
                     {
                         allUser.length === 0 && (
                             <div className='mt-12'>
-                                <div className='flex justify-center items-center my-4 text-slate-500'>
+                                <div className='flex justify-center items-center my-4 text-slate-300'>
                                     <FiArrowUpLeft
                                         size={50}
                                     />
@@ -152,7 +153,7 @@ const Sidebar = () => {
                                     key={index} 
                                     to={"/" + item.name}
                                     onClick={() => hanleClickUserCard(item.name)} 
-                                    className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-100 cursor-pointer'>
+                                    className='flex items-center gap-2 py-3 px-2 border border-transparent hover:border-primary rounded hover:bg-slate-600 cursor-pointer'>
                                     <div>
                                         <Avatar                                        
                                             username={item.name}
@@ -161,8 +162,8 @@ const Sidebar = () => {
                                         />    
                                     </div>
                                     <div>
-                                        <h3 className='text-ellipsis line-clamp-1 font-semibold text-base'>{item.name}</h3>
-                                        <div className='text-slate-500 text-xs flex items-center gap-1'>
+                                        <h3 className='text-ellipsis text-slate-200 line-clamp-1 font-semibold text-base'>{item.name}</h3>
+                                        <div className='text-slate-200 text-xs flex items-center gap-1'>
                                             <p className='text-ellipsis line-clamp-1'>{item.actionTime}</p>
                                         </div>
                                     </div>
