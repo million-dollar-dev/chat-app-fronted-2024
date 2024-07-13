@@ -22,7 +22,7 @@ const EmojiPicker = ({ onSelectEmoji }) => {
                 className="p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hover:hover:bg-slate-200"
                 type="button"
             >
-                <FaSmile className="h-6 w-6 text-primary" />
+                <FaSmile className="h-6 w-6 text-btnColor" />
             </button>
             {isPickerVisible && (
                 <div className="absolute bottom-full mb-2 right-0 transform z-10">

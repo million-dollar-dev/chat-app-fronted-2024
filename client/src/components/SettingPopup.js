@@ -33,12 +33,12 @@ const SettingPopup = ({handleClose}) => {
     return (
         <div className="relative" >
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg shadow-lg p-4 relative" style={{"width":700, "height": 500}}>
+                    <div className="bg-primary rounded-lg shadow-lg p-4 relative" style={{"width":700, "height": 500}}>
                         <div className="flex justify-between items-center border-b pb-2 mb-4">
                             <h3 className="text-xl font-semibold text-center flex-grow">{t('options')}</h3>
                             <button
                                 onClick={onClose}
-                                className="text-gray-900 hover:bg-primary border rounded-full w-9 h-9 text-2xl"
+                                className="text-gray-900 hover:bg-slate-300 border rounded-full w-9 h-9 text-2xl"
                             >
                                 &times;
                             </button>

@@ -246,7 +246,7 @@ const MessagePage = () => {
     const hasMessage = message.length > 0;
     return (
         <div style={{backgroundImage: `url(${backgroundImage})`}} className='bg-no-repeat bg-cover'>
-            <header className='sticky top-0 h-16 bg-white flex justify-between items-center px-4'>
+            <header className='sticky top-0 h-16 bg-primary shadow-lg flex justify-between items-center px-4'>
                 <div className='flex items-center gap-4'>
                     <Link to={"/"} className='lg:hidden'>
                         <FaAngleLeft size={25}/>
@@ -262,7 +262,7 @@ const MessagePage = () => {
                         <h3 className='font-semibold text-lg my-0 text-ellipsis line-clamp-1'>{params?.username}</h3>
                         <p className='-my-2 text-sm'>
                             {
-                                true ? <span className='text-primary'>Online</span> :
+                                true ? <span className='text-btnColor'>Online</span> :
                                     <span className='text-slate-400'>Offline</span>
                             }
                         </p>
@@ -292,7 +292,7 @@ const MessagePage = () => {
                                     {showDatetime && <span
                                         className="text-center">{prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss')}</span>}
                                     <div key={msg.id}
-                                         className={`p1 ${isFileUrl(msg.mes) ? "rounded-lg" : "rounded-xl"} w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${userChat !== msg.name ? "ml-auto bg-teal-100" : "bg-white"}`}>
+                                         className={`p1 ${isFileUrl(msg.mes) ? "rounded-lg" : "rounded-xl"} w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${userChat !== msg.name ? "ml-auto bg-btnColor text-primary" : "bg-white"}`}>
                                         <div className='relative inline-block group'>
                                             <div className='break-all px-2 py-1'>
                                                 {
@@ -320,14 +320,14 @@ const MessagePage = () => {
             </section>
 
             {/*send message*/}
-            <section className='h-16 bg-white flex items-center px-4'>
+            <section className='h-16 bg-white flex items-center px-4 shadow-md'>
                 <div className='relative flex gap-2'>
                     {hasMessage ? (
                         <>
                             <button
                                 ref={plusIconRef}
                                 onClick={() => setOpenImageVideoUpload(!openImageVideoUpload)}
-                                className='flex justify-center items-center w-8 h-8 rounded-full hover:bg-primary hover:text-white transition-all duration-300 ease-in-out'>
+                                className='flex text-btnColor justify-center items-center w-8 h-8 rounded-full hover:bg-slate-200 transition-all duration-300 ease-in-out'>
                                 <FaPlus size={20}/>
                             </button>
                             {
@@ -338,14 +338,14 @@ const MessagePage = () => {
                                         <form>
                                             <label htmlFor='uploadVideoExt'
                                                    className='flex items-center p-2 px-3 gap-3 hover:bg-slate-200 cursor-pointer'>
-                                                <div className='text-purple-500'>
+                                                <div className='text-btnColor'>
                                                     <FaVideo size={18}/>
                                                 </div>
                                                 <p>Video</p>
                                             </label>
                                             <label htmlFor='uploadImageExt'
                                                    className='flex items-center p-2 px-3 gap-3 hover:bg-slate-200 cursor-pointer'>
-                                                <div className='text-primary'>
+                                                <div className='text-btnColor'>
                                                     <FaImage size={18}/>
                                                 </div>
                                                 <p>Image</p>
@@ -371,13 +371,13 @@ const MessagePage = () => {
                         <form className='flex'>
                             <label htmlFor='uploadVideo'>
                                 <div
-                                    className='text-purple-500 flex justify-center items-center w-8 h-8 rounded-full hover:bg-slate-200 transition-all duration-300 ease-in-out'>
+                                    className='text-btnColor flex justify-center items-center w-8 h-8 rounded-full hover:bg-slate-200 transition-all duration-300 ease-in-out'>
                                 <FaVideo size={20}/>
                                 </div>
                             </label>
                             <label htmlFor='uploadImage'>
                                 <div
-                                    className='text-primary flex justify-center items-center w-8 h-8 rounded-full hover:bg-slate-200 transition-all duration-300 ease-in-out'>
+                                    className='text-btnColor flex justify-center items-center w-8 h-8 rounded-full hover:bg-slate-200 transition-all duration-300 ease-in-out'>
                                     <FaImage size={20}/>
                                 </div>
                             </label>
@@ -403,7 +403,7 @@ const MessagePage = () => {
                         <input
                             type='text'
                             placeholder={t('Type_here_message')}
-                            className='bg-transparent outline-none flex-grow p-2 text-gray-700'
+                            className='bg-transparent outline-none flex-grow p-2 ml-1 text-gray-700'
                             value={message}
                             // onChange={(e) => setMessage(e.target.value)}
                             onChange={handleTypingMessage}
@@ -412,12 +412,12 @@ const MessagePage = () => {
                             onKeyDown={getCurrentCursor}
                             // onBlur={resetCursorPosition}
                         />
-                        <button className='text-blue-500' type="button">
+                        <button className='text-btnColor' type="button">
                             <EmojiPicker size={28} onSelectEmoji={handleAddEmoji}/>
                         </button>
                     </div>
-                    <button className='text-primary hover:text-secondary' type="submit">
-                        <RiSendPlane2Fill size={28}/>
+                    <button className='text-btnColor hover:bg-slate-200 rounded-full p-1.5' type="submit">
+                        <RiSendPlane2Fill size={24}/>
                     </button>
                 </form>
             </section>
