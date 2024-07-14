@@ -20,9 +20,9 @@ const Home = () => {
     }, []);
 
     return (
-        <div className='grid lg: grid-cols-[300px,1fr] h-screen max-h-screen'>
+        <div className='grid lg: grid-cols-[360px,1fr] h-screen max-h-screen'>
             <AllUserContext.Provider value={{allUser, setAllUser}}>
-                <section className={`bg-gray-900 ${!basePath && "hidden"} lg:block`}>
+                <section className={`bg-primary ${!basePath && "hidden"} lg:block`}>
                     <Sidebar></Sidebar>
                 </section>
                 {/*Message Component*/}
@@ -31,14 +31,14 @@ const Home = () => {
                 </section>
             </AllUserContext.Provider>
 
-            <div className={`bg-gray-900  justify-center items-center flex-col gap-2 hidden ${!basePath ? "hidden" : "lg:flex" }`}>
+            <div className={`bg-primary  justify-center items-center flex-col gap-2 hidden ${!basePath ? "hidden" : "lg:flex" }`}>
                 <div className="flex flex-col items-center">
                     <img
                         src={logo}
                         width={220}
                         alt='logo'
                     />
-                    <p className='text-lg mt-2 text-slate-500'>{t('select_user_to_send_message')}</p>
+                    <p className='text-lg mt-2 text-headlineColor'>{t('select_user_to_send_message')}</p>
                 </div>
             </div>
         </div>

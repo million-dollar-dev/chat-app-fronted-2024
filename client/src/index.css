@@ -20,8 +20,8 @@ code {
 .sidebar-icon {
   @apply relative flex items-center justify-center
   h-12 w-12 mt-2 mb-2 mx-auto
-  bg-gray-800 hover:bg-green-600
-  text-green-500 hover:text-white
+  bg-primary hover:bg-secondary
+  text-btnColor
   hover:rounded-xl rounded-3xl
   transition-all duration-300 ease-linear
   cursor-pointer shadow-lg ;
@@ -33,9 +33,9 @@ code {
   transition-all duration-100 scale-0 origin-left z-50;
 }
 .sidebar-hr {
-  @apply bg-gray-500 dark:bg-gray-800
-  border border-gray-700 dark:border-gray-800 rounded-full
-  mx-2;
+  @apply bg-secondary dark:bg-gray-800
+  border border-secondary dark:border-gray-800 rounded-full
+  mx-1;
 }
 
 
