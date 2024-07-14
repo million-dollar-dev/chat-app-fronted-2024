@@ -1,6 +1,6 @@
 import {Link, useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
-import {useContext, useEffect, useRef, useState} from "react";
+import {useCallback, useContext, useEffect, useRef, useState} from "react";
 import Avatar from "./Avatar";
 import {FaAngleLeft} from "react-icons/fa";
 import {RiSendPlane2Fill} from "react-icons/ri";
@@ -47,7 +47,9 @@ const MessagePage = () => {
     const uploadImageVideoRef = useRef();
     const plusIconRef = useRef();
     const { t } = useTranslation();
-
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const messageContainer = useRef(null);
     const getAllMessage = () => {
         const data = {
             "action": "onchat",
@@ -63,8 +65,10 @@ const MessagePage = () => {
         websocketService.socket.onmessage = (message) => {
             const response = JSON.parse(message.data);
             console.log('getAll method', response)
-            if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success')
+            if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success') {
                 setAllMessage(response.data.reverse());
+            }
+
             if (response.event === 'GET_ROOM_CHAT_MES' && response.status === 'success') {
                 setAllMessage(response.data.chatData.reverse());
                 setInfoGroup(infoGroup => {
@@ -76,13 +80,13 @@ const MessagePage = () => {
                     }
                 })
             }
-                
+
             if (response.event === 'SEND_CHAT' && response.status === 'success') {
-                if (response.data.name === params.username)
+                if (response.data.name === params.username || response.data.to === params.username)
                     handleUpdateMessage()
                 playNotificationEffect()
                 showTitleNotification()
-                updateUserList(response.data.name, response.data.type, now.format('YYYY-MM-DD HH:mm:ss'), true)
+                updateUserList(response.data.type === 1 ? response.data.to : response.data.name, response.data.type, now.format('YYYY-MM-DD HH:mm:ss'), true)
             }
         };
     }
@@ -104,12 +108,12 @@ const MessagePage = () => {
             const response = JSON.parse(message.data)
             console.log('update mess method', response);
             if (response.event === 'SEND_CHAT' && response.status === 'success') {
-                if (response.data.name === params.username)
+                if (response.data.name === params.username || response.data.to === params.username)
                     handleUpdateMessage()
                 playNotificationEffect()
                 showTitleNotification()
-                updateUserList(response.data.name, response.data.type, now.format('YYYY-MM-DD HH:mm:ss'), true)             
-            } 
+                updateUserList(response.data.type === 1 ? response.data.to : response.data.name, response.data.type, now.format('YYYY-MM-DD HH:mm:ss'), true)
+            }
             if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success'){
                 console.log('cap nhat tin nhan')
                 setAllMessage((allMessage) => [...allMessage, response.data[0]]);
@@ -117,16 +121,15 @@ const MessagePage = () => {
             if (response.event === 'GET_ROOM_CHAT_MES' && response.status === 'success'){
                 console.log('cap nhat tin nhan group')
                 setAllMessage((allMessage) => [...allMessage, response.data.chatData[0]]);
-            }      
+            }
         };
     }
 
-    const updateUserList = (username, type, time, isReceiver) => {   
+    const updateUserList = (username, type, time, isReceiver) => {
         const filterList = allUser.filter(item => item.name !== username)
-        console.log(filterList)
         setAllUser([{name: username, type: type, actionTime: time, isNewMessage: isReceiver}, ...filterList])
     }
-    
+
     const handleSendMessage = (e) => {
         e.preventDefault()
         if (message) {
@@ -137,7 +140,8 @@ const MessagePage = () => {
                     "data": {
                         "type": params.type === "group" ? "room" : "people",
                         "to": params.username,
-                        "mes": encodeToBase64(message)
+                        // "mes": encodeToBase64(message)
+                        "mes": message
                     }
                 }
             };
@@ -205,7 +209,10 @@ const MessagePage = () => {
     useEffect(() => {
         setUserChat(params.username);
         if (user) {
-            getAllMessage(params.username);
+            getAllMessage();
+            setPage(1);
+            setLoading(false);
+            setHasMore(true);
             if (params.type !== "group") {
                 setInfoGroup({
                     name: "",
@@ -227,10 +234,71 @@ const MessagePage = () => {
            if (uploadImageVideoRef.current && !uploadImageVideoRef.current.contains(e.target) && !plusIconRef.current.contains(e.target)){
                setOpenImageVideoUpload(false)
            }
-
        }
        document.addEventListener('mousedown',handleClickOutside);
     });
+
+    const getMessages = (pageNum, username) => {
+        const data = {
+            "action": "onchat",
+            "data": {
+                "event": params.type === "group" ? "GET_ROOM_CHAT_MES" : "GET_PEOPLE_CHAT_MES",
+                "data": {
+                    "name": username,
+                    "page": pageNum
+                }
+            }
+        };
+        websocketService.send(data);
+        websocketService.socket.onmessage = (message) => {
+            console.log('load new message', data)
+            const response = JSON.parse(message.data);
+            if (response.status === 'success') {
+                const newMessages = params.type === "group" ? response.data.chatData : response.data;
+                if (newMessages.length === 0) {
+                    setHasMore(false);
+                } else {
+                    setAllMessage(prevMessages => [...newMessages.reverse(), ...prevMessages]);
+                }
+            }
+            setLoading(false);
+        };
+    };
+
+    const loadMoreMessages = useCallback(() => {
+        if (!hasMore || loading) return;
+        setLoading(true);
+        console.log('page', page);
+        setPage(prevPage => prevPage + 1);
+        console.log('nextpage', page);
+        getMessages(page, params.username);
+
+    }, [hasMore, loading, page, params.username]);
+
+    const handleScroll = () => {
+        if (messageContainer.current.scrollTop === 0) {
+            console.log('scroll top')
+        };
+        if (messageContainer.current.scrollTop === 0 && hasMore && !loading) {
+            loadMoreMessages();
+            console.log('dinh', page)
+        }
+    };
+
+    useEffect(() => {
+        console.log('haha, message container', messageContainer.current)
+        const container = messageContainer.current;
+        if (container) {
+            console.log('add scroll event', container)
+
+            container.addEventListener('scroll', handleScroll);
+        }
+        return () => {
+            if (container) {
+                container.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, [params.username, hasMore, loading, messageContainer.current]);
 
     const processMessage = (message) => {
         if (isBase64(message)) {
@@ -310,11 +378,12 @@ const MessagePage = () => {
                         </div>
                     )
                 }
-                
+
             </header>
 
             {/*all message*/}
             <section
+                ref={messageContainer}
                 className='h-[calc(100vh-128px)] overflow-x-hidden overflow-y-scroll scrollbar relative bg-slate-200 bg-opacity-50'>
                 {/*all message show here*/}
                 <div className='flex flex-col gap-2 py-2 mx-2' ref={currentMessage}>
@@ -465,7 +534,7 @@ const MessagePage = () => {
                 </form>
             </section>
             {
-                openInfoPopup && <InfoGroupPopup userList={infoGroup.userList} name={infoGroup.name} owner={infoGroup.owner} onClose={() => setOpenInfoPopup(false)}/>
+                openInfoPopup && <InfoGroupPopup data={infoGroup} onClose={() => setOpenInfoPopup(false)}/>
             }
         </div>
     )

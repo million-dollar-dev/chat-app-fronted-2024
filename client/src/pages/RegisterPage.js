@@ -113,13 +113,13 @@ const RegisterPage = () => {
                 required
             />
           </div>
-          <button className='bg-primary text-lg px-4 py-1 hover:bg-secondary rounded mt-2 text-white leading-relaxed tracking-wide'
+          <button className='bg-btnColor text-btnTextColor text-lg px-4 py-1 hover:bg-secondary rounded mt-2 text-white leading-relaxed tracking-wide'
                   onClick={handleRegister}
           >
               {t('register')}
           </button>
         </div>
-        <p className='my-3 text-center'>{t('already_have_account')} <Link to={"/login"} className='hover:text-primary font-semibold'>{t('login')} </Link></p>
+        <p className='my-3 text-center'>{t('already_have_account')} <Link to={"/login"} className='hover:text-btnColor font-semibold'>{t('login')} </Link></p>
 
 
       </div>

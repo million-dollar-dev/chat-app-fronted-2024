@@ -162,7 +162,7 @@ const Sidebar = () => {
                                 return (
                                     <NavLink
                                         key={index}
-                                        to={item.type === 1 ? `/group/${item.name}` : `/people/${item.name}`}
+                                        to={item.type == 1 ? `/group/${item.name}` : `/people/${item.name}`}
                                         onClick={() => handleClickUserCard(item.name)}
                                         className='flex items-center gap-2 py-3 px-2 mx-2 my-4 shadow-[0_3px_10px_rgb(0,0,0,0.2)] border border-transparent hover:border-2 hover:border-btnColor rounded-lg bg-primary cursor-pointer'>
                                         <div>
