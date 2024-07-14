@@ -18,6 +18,8 @@ import uploadFile from "../utils/uploadFile";
 import Loading from "./Loading";
 import { playNotificationEffect, showTitleNotification } from "../utils/notify"
 import {useTranslation} from "react-i18next";
+import { IoInformationCircle } from "react-icons/io5";
+import InfoGroupPopup from "./InfoGroupPopup";
 
 const tz = 'Asia/Ho_Chi_Minh';
 dayjs.extend(utc);
@@ -36,17 +38,23 @@ const MessagePage = () => {
     const [openImageVideoUpload,setOpenImageVideoUpload] = useState(false);
     const [loading,setLoading] = useState(false);
     const [position,setPosition] = useState([]);
+    const [openInfoPopup, setOpenInfoPopup] = useState(false);
+    const [infoGroup, setInfoGroup] = useState({
+        name: "",
+        owner: "",
+        userList: []
+    });
     const uploadImageVideoRef = useRef();
     const plusIconRef = useRef();
     const { t } = useTranslation();
 
-    const getAllMessage = (username) => {
+    const getAllMessage = () => {
         const data = {
             "action": "onchat",
             "data": {
-                "event": "GET_PEOPLE_CHAT_MES",
+                "event": params.type === "group" ? "GET_ROOM_CHAT_MES" : "GET_PEOPLE_CHAT_MES",
                 "data": {
-                    "name": username,
+                    "name": params.username,
                     "page": 1
                 }
             }
@@ -57,12 +65,24 @@ const MessagePage = () => {
             console.log('getAll method', response)
             if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success')
                 setAllMessage(response.data.reverse());
+            if (response.event === 'GET_ROOM_CHAT_MES' && response.status === 'success') {
+                setAllMessage(response.data.chatData.reverse());
+                setInfoGroup(infoGroup => {
+                    return {
+                        ...infoGroup,
+                        name: response.data.name,
+                        owner: response.data.own,
+                        userList: response.data.userList
+                    }
+                })
+            }
+                
             if (response.event === 'SEND_CHAT' && response.status === 'success') {
                 if (response.data.name === params.username)
                     handleUpdateMessage()
                 playNotificationEffect()
                 showTitleNotification()
-                updateUserList(response.data.name, now.format('YYYY-MM-DD HH:mm:ss'), true)
+                updateUserList(response.data.name, response.data.type, now.format('YYYY-MM-DD HH:mm:ss'), true)
             }
         };
     }
@@ -71,7 +91,7 @@ const MessagePage = () => {
         const data = {
             "action": "onchat",
             "data": {
-                "event": "GET_PEOPLE_CHAT_MES",
+                "event": params.type === "group" ? "GET_ROOM_CHAT_MES" : "GET_PEOPLE_CHAT_MES",
                 "data": {
                     "name": params.username,
                     "page": 1
@@ -88,20 +108,23 @@ const MessagePage = () => {
                     handleUpdateMessage()
                 playNotificationEffect()
                 showTitleNotification()
-                updateUserList(response.data.name, now.format('YYYY-MM-DD HH:mm:ss'), true)             
-            } if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success'){
+                updateUserList(response.data.name, response.data.type, now.format('YYYY-MM-DD HH:mm:ss'), true)             
+            } 
+            if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success'){
                 console.log('cap nhat tin nhan')
                 setAllMessage((allMessage) => [...allMessage, response.data[0]]);
-            }            
+            }
+            if (response.event === 'GET_ROOM_CHAT_MES' && response.status === 'success'){
+                console.log('cap nhat tin nhan group')
+                setAllMessage((allMessage) => [...allMessage, response.data.chatData[0]]);
+            }      
         };
     }
 
-    const updateUserList = (username, time, isReceiver) => {
-        console.log('reciever', username)
-        console.log('time', time)        
+    const updateUserList = (username, type, time, isReceiver) => {   
         const filterList = allUser.filter(item => item.name !== username)
         console.log(filterList)
-        setAllUser([{name: username, actionTime: time, isNewMessage: isReceiver}, ...filterList])
+        setAllUser([{name: username, type: type, actionTime: time, isNewMessage: isReceiver}, ...filterList])
     }
     
     const handleSendMessage = (e) => {
@@ -112,7 +135,7 @@ const MessagePage = () => {
                 "data": {
                     "event": "SEND_CHAT",
                     "data": {
-                        "type": "people",
+                        "type": params.type === "group" ? "room" : "people",
                         "to": params.username,
                         "mes": encodeToBase64(message)
                     }
@@ -124,7 +147,7 @@ const MessagePage = () => {
                 console.log('send res', response)
             };
             handleUpdateMessage();
-            updateUserList(params.username, now.format('YYYY-MM-DD HH:mm:ss'), false)
+            updateUserList(params.username, params.type === "group" ? "1" : "0", now.format('YYYY-MM-DD HH:mm:ss'), false)
             setMessage("");
         }
     }
@@ -144,7 +167,7 @@ const MessagePage = () => {
                 "data": {
                     "event": "SEND_CHAT",
                     "data": {
-                        "type": "people",
+                        "type": params.type === "group" ? "room" : "people",
                         "to": params.username,
                         "mes": fileUrl
                     }
@@ -183,6 +206,13 @@ const MessagePage = () => {
         setUserChat(params.username);
         if (user) {
             getAllMessage(params.username);
+            if (params.type !== "group") {
+                setInfoGroup({
+                    name: "",
+                    owner: "",
+                    userList: []
+                })
+            }
         }
     }, [params, user])
 
@@ -212,7 +242,7 @@ const MessagePage = () => {
                     <img
                         src={message}
                         className='w-full h-full object-scale-down'
-                        alt='Image'
+                        alt=''
                     />
                 );
             }
@@ -242,7 +272,7 @@ const MessagePage = () => {
         getCurrentCursor(e);
     }
 
-    let prevMesCreateAt, decodeMessage;
+    let prevMesCreateAt;
     const hasMessage = message.length > 0;
     return (
         <div style={{backgroundImage: `url(${backgroundImage})`}} className='bg-no-repeat bg-cover'>
@@ -268,6 +298,19 @@ const MessagePage = () => {
                         </p>
                     </div>
                 </div>
+
+                {
+                    params.type === 'group' && (
+                        <div >
+                            <button
+                                onClick={() => setOpenInfoPopup(true)}
+                                className='cursor-pointer text-btnColor rounded-full hover:bg-slate-200 p-2'>
+                                <IoInformationCircle fontSize={24}/>
+                            </button>
+                        </div>
+                    )
+                }
+                
             </header>
 
             {/*all message*/}
@@ -292,7 +335,7 @@ const MessagePage = () => {
                                     {showDatetime && <span
                                         className="text-center">{prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss')}</span>}
                                     <div key={msg.id}
-                                         className={`p1 ${isFileUrl(msg.mes) ? "rounded-lg" : "rounded-xl"} w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${userChat !== msg.name ? "ml-auto bg-btnColor text-primary" : "bg-white"}`}>
+                                         className={`p1 ${isFileUrl(msg.mes) ? "rounded-lg" : "rounded-xl"} w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${user === msg.name ? "ml-auto bg-btnColor text-primary" : "bg-white"}`}>
                                         <div className='relative inline-block group'>
                                             <div className='break-all px-2 py-1'>
                                                 {
@@ -421,6 +464,9 @@ const MessagePage = () => {
                     </button>
                 </form>
             </section>
+            {
+                openInfoPopup && <InfoGroupPopup userList={infoGroup.userList} name={infoGroup.name} owner={infoGroup.owner} onClose={() => setOpenInfoPopup(false)}/>
+            }
         </div>
     )
 };
