@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Avatar from './Avatar'; // Đảm bảo import component Avatar
+import Avatar from './Avatar';
 
 const InfoGroupPopup = ({ onClose, data}) => {
     return (
@@ -34,7 +34,7 @@ const InfoGroupPopup = ({ onClose, data}) => {
                 </div>
                 
                 <div className="mb-4">
-                    <div className="text-sm font-medium text-gray-700 mb-6">Members: {userList.length}</div>
+                    <div className="text-sm font-medium text-gray-700 mb-6">Members: {data.userList.length}</div>
                     <div className='h-40 overflow-x-hidden overflow-y-auto scrollbar'>
                         {data.userList.map((item, index) => (
                             <div key={index} className='flex items-center mb-2 ml-12'>

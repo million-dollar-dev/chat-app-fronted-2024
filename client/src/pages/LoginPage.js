@@ -98,14 +98,14 @@ const LoginPage = () => {
                         </div>
                     </div>
                     <button
-                        className='bg-primary text-lg px-4 py-1 hover:bg-secondary rounded mt-2 text-white leading-relaxed tracking-wide'
+                        className='bg-btnColor text-btnTextColor text-lg px-4 py-1 hover:bg-secondary rounded mt-2 leading-relaxed tracking-wide'
                         onClick={handleLogin}
                     >
                         {t('login')}
                     </button>
                 </div>
                 <p className='my-3 text-center'>{t('dont_have_an_account')}<Link to={"/register"}
-                                                                             className='hover:text-primary font-semibold'>{t('register')}</Link>
+                                                                             className='hover:text-btnColor font-semibold'>{t('register')}</Link>
                 </p>
             </div>
         </div>
