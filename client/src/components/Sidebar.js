@@ -162,7 +162,7 @@ const Sidebar = () => {
                                 return (
                                     <NavLink
                                         key={index}
-                                        to={"/" + item.name}
+                                        to={item.type === 1 ? `/group/${item.name}` : `/people/${item.name}`}
                                         onClick={() => handleClickUserCard(item.name)}
                                         className='flex items-center gap-2 py-3 px-2 mx-2 my-4 shadow-[0_3px_10px_rgb(0,0,0,0.2)] border border-transparent hover:border-2 hover:border-btnColor rounded-lg bg-primary cursor-pointer'>
                                         <div>
@@ -173,7 +173,7 @@ const Sidebar = () => {
                                             />
                                         </div>
                                         <div>
-                                            <h3 className='text-ellipsis text-headlineColor line-clamp-1 font-semibold text-base'>{item.name}</h3>
+                                            <h3 className='text-ellipsis text-headlineColor line-clamp-1 font-semibold text-base'>{item.type == 0 ? item.name : `Group: ${item.name}`}</h3>
                                             <div className='text-headlineColor text-xs flex items-center gap-1'>
                                                 <p className='text-ellipsis line-clamp-1'>{item.actionTime}</p>
                                             </div>

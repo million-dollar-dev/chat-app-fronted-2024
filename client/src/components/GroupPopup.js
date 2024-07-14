@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import websocketService from "../services/websocket";
 import toast from "react-hot-toast";
+import { useNavigate } from 'react-router-dom';
 
 const GroupChatPopup = ({ onClose, isCreateGroup }) => {
     const [groupName, setGroupName] = useState('');
-
+    const navigate = useNavigate();
     const handleJoinGroup = () => {
         console.log('edđ')
         websocketService.send({
@@ -21,11 +22,13 @@ const GroupChatPopup = ({ onClose, isCreateGroup }) => {
             console.log(response);
             if (response.event === 'JOIN_ROOM' && response.status === 'success') {
                 toast.success('Join successfully');
+                navigate('/group/' + groupName.trim())
             }
             if (response.event === 'JOIN_ROOM' && response.status === 'error') {
                 toast.error(response.mes);
             }
         }
+        
         onClose();
     };
 
