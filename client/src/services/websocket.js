@@ -1,3 +1,5 @@
+import eventManager from './eventManager';
+
 class WebSocketService {
     constructor() {
         this.socket = null;
@@ -18,6 +20,12 @@ class WebSocketService {
             this.socket.onerror = (error) => {
                 console.error('WebSocket error:', error);
             };
+
+            this.socket.onmessage = (message) => {
+                const response = JSON.parse(message.data);
+                console.log('Nhận được response', response);
+                eventManager.emit(response.event, response);
+            };
         }
     }
 
@@ -25,18 +33,17 @@ class WebSocketService {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.socket.send(JSON.stringify(data));
         } else {
-            console.error('WebSocket is not connected');
+            // this.connect('ws://140.238.54.136:8080/chat/chat');
+            console.log('disconnected')
         }
     }
 
-    onMessage(callback) {
-        if (this.socket) {
-            this.socket.onmessage = (message) => {
-                callback(JSON.parse(message.data));
-            };
-        } else {
-            console.error('WebSocket is not initialized');
-        }
+    on(event, callback) {
+        eventManager.on(event, callback);
+    }
+
+    off(event, callback) {
+        eventManager.off(event, callback);
     }
 }
 

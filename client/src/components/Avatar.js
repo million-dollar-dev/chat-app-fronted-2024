@@ -1,6 +1,9 @@
 import {PiUserCircle} from "react-icons/pi";
+import {useEffect, useState} from "react";
+import websocketService from "../services/websocket";
 
-const Avatar = ({username, width, height}) => {
+
+const Avatar = ({username, width, height, isOnline}) => {
     let avatarName = "";
     if (username) {
         const splitName = username?.split(" ");
@@ -11,28 +14,13 @@ const Avatar = ({username, width, height}) => {
         }
     }
 
-    const bgColor = [
-        'bg-slate-200',
-        'bg-teal-200',
-        'bg-red-200',
-        'bg-green-200',
-        'bg-yellow-200',
-        'bg-gray-200',
-        "bg-cyan-200",
-        "bg-sky-200",
-        "bg-blue-200"
-    ];
-
-    const randomNumber = Math.floor(Math.random() * 9);
-    const isOnline = true;
-
     return (
         <div className={`text-slate-800  rounded-full font-bold relative`}
              style={{width: width + "px", height: height + "px"}}>
             {
                 username ? (
                     <div style={{width: width + "px", height: height + "px"}}
-                         className={`overflow-hidden rounded-full flex justify-center items-center text-lg ${bgColor[randomNumber]}`}>
+                         className='overflow-hidden rounded-full flex justify-center items-center text-lg bg-slate-200'>
                         {avatarName}
                     </div>
                 ) : (

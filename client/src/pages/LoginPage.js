@@ -6,6 +6,7 @@ import websocketService from "../services/websocket";
 import { useDispatch } from "react-redux";
 import {setUser} from "../redux/actions";
 import {useTranslation} from "react-i18next";
+import eventManager from "../services/eventManager";
 
 const LoginPage = () => {
     const [visible, setVisible] = useState(false);
@@ -30,27 +31,23 @@ const LoginPage = () => {
             }
         };
 
-        websocketService.send(loginData);
 
-        websocketService.socket.onmessage = (message) => {
-            const response = JSON.parse(message.data);
-            console.log(response);
-            if (response.event === 'LOGIN') {
-                if (response.status === 'success' ) {
-                    dispatch(setUser(username));
-                    navigate('/');
-                    setUsername('');
-                    setPassword('');
-                    toast.success(t('login_successfully'));
-                } else {
-                    setPassword('');
-                    toast.error(response.mes);
-                }           
+
+        const loginCallback = (response) => {
+            if (response.status === "success" && response.event === "LOGIN") {
+                dispatch(setUser(username));
+                navigate("/");
+                setUsername("");
+                setPassword("");
+                websocketService.off("LOGIN", loginCallback)
+                toast.success(t("login_successfully"));
             } else {
-                toast(response.data)
+                setPassword("");
+                toast.error(response.mes);
             }
-                 
         };
+        websocketService.on("LOGIN", loginCallback);
+        websocketService.send(loginData);
     };
 
     
