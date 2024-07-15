@@ -1,6 +1,6 @@
 import {Link, useParams} from "react-router-dom";
 import {useSelector} from "react-redux";
-import {useCallback, useContext, useEffect, useRef, useState} from "react";
+import React, {useCallback, useContext, useEffect, useRef, useState} from "react";
 import Avatar from "./Avatar";
 import {FaAngleLeft} from "react-icons/fa";
 import {RiSendPlane2Fill} from "react-icons/ri";
@@ -398,27 +398,41 @@ const MessagePage = () => {
                             }
                             prevMesCreateAt = dayjs.utc(msg.createAt, 'DD/MM/YYYY HH:mm:ss').tz();
                             let newTimeString = dayjs.utc(msg.createAt, 'HH:mm').tz();
+                            const senderInfo = allUser.find(user => user.name === msg.name) || { name: msg.name, avatar: "default-avatar-url" };
 
                             return (
                                 <>
-                                    {showDatetime && <span
-                                        className="text-center">{prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss')}</span>}
+                                    {showDatetime && <span className="text-center">{prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss')}</span>}
+
                                     <div key={msg.id}
-                                         className={`p1 ${isFileUrl(msg.mes) ? "rounded-lg" : "rounded-xl"} w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${user === msg.name ? "ml-auto bg-btnColor text-primary" : "bg-white"}`}>
+
+                                         className={`p1 ${isFileUrl(msg.mes) ? "rounded-lg" : "rounded-xl"} w-fit max-w-[280px] md:max-w-sm lg:max-w-md ${user === msg.name ? "ml-auto bg-btnColor text-primary" : "bg-white"}`}>
                                         <div className='relative inline-block group'>
-                                            <div className='break-all px-2 py-1'>
-                                                {
-                                                    processMessage(msg.mes)
-                                                }
+                                            <div
+                                                className={`break-all px-2 py-1 flex items-center  ${user === msg.name ? "flex-row-reverse" : "flex-row"}`}>
+                                                <div>
+                                                    <Avatar
+                                                        image={senderInfo.avatar}
+                                                        username={senderInfo.name}
+                                                        width={40} s
+                                                        height={40}
+                                                    />
+                                                    <div className="text-center text-sm  whitespace-nowrap">{senderInfo.name}</div>
+                                                </div>
+                                                <div ></div>
+                                                <span
+                                                    className={user === msg.name ? "pr-3" : "pl-3"} > {processMessage(msg.mes)}
+                                                </span>
+
                                             </div>
                                             <div
-                                                className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${userChat !== msg.name ? "right-full" : "left-full"} text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>
+                                                className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${user !== msg.name ? "right-full" : "left-full"} text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>
                                                 {newTimeString.format('HH:mm')}
                                             </div>
                                         </div>
                                     </div>
                                 </>
-                            )
+                            );
                         })
                     }
                 </div>
@@ -467,12 +481,15 @@ const MessagePage = () => {
                                                 id='uploadImageExt'
                                                 onChange={handleUploadFile}
                                                 className='hidden'
+                                                accept="audio/*, video/*,image/*"
+
                                             />
                                             <input
                                                 type='file'
                                                 id='uploadVideoExt'
                                                 onChange={handleUploadFile}
                                                 className='hidden'
+                                                accept="audio/*, video/*,image/*"
                                             />
                                         </form>
                                     </div>
@@ -498,12 +515,14 @@ const MessagePage = () => {
                                 id='uploadImage'
                                 onChange={handleUploadFile}
                                 className='hidden'
+                                accept="audio/*, video/*,image/*"
                             />
                             <input
                                 type='file'
                                 id='uploadVideo'
                                 onChange={handleUploadFile}
                                 className='hidden'
+                                accept="audio/*, video/*,image/*"
                             />
                         </form>
                     )}
