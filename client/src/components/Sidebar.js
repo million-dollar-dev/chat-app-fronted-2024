@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import {IoChatbubbleEllipses, IoPersonAdd, IoSettingsOutline} from "react-icons/io5";
 import {FaUserPlus} from "react-icons/fa";
 import {NavLink, useNavigate} from "react-router-dom";
@@ -19,6 +19,7 @@ import {IoIosSettings, IoMdPersonAdd} from "react-icons/io";
 import {HiUserGroup} from "react-icons/hi";
 import {MdGroupAdd} from "react-icons/md";
 import GroupPopup from "./GroupPopup";
+import eventManager from "../services/eventManager";
 
 const Sidebar = () => {
     const [openSearchUser, setOpenSearchUser] = useState(false);
@@ -30,7 +31,6 @@ const Sidebar = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const {t} = useTranslation();
-
     const togglePopup = () => {
         setShowPopup(!showPopup);
     };
@@ -52,21 +52,20 @@ const Sidebar = () => {
     }
 
     const handleGetAllUser = () => {
+        console.log('getalluser')
+        const getAllUserCallback = (response) => {
+            if (response.event === "GET_USER_LIST" && response.status === "success") {
+                setAllUser(response.data);
+            }
+            websocketService.off("GET_USER_LIST", getAllUserCallback);
+        };
+        websocketService.on("GET_USER_LIST", getAllUserCallback);
         websocketService.send({
             "action": "onchat",
             "data": {
                 "event": "GET_USER_LIST"
             }
         })
-        websocketService.socket.onmessage = (message) => {
-            const response = JSON.parse(message.data);
-            console.log(response);
-            if (response.event === 'GET_USER_LIST' && response.status === 'success') {
-                setAllUser(response.data)
-            }
-            if (response.event === 'SEND_CHAT' && response.status === 'success')
-                handleGetAllUser()
-        }
     }
 
     const handleClickUserCard = (username) => {
@@ -76,13 +75,11 @@ const Sidebar = () => {
         clearTitleNotification()
         setAllUser(updateList)
     }
-
     useEffect(() => {
         if (user)
-            handleGetAllUser()
+            handleGetAllUser();
     }, [user])
-
-    const SidebarIcon = ({icon, text = 'tooltip 💡'}) => (
+    const SidebarIcon = ({icon, text}) => (
         <div className="sidebar-icon group">
             {icon}
             <span className="sidebar-tooltip group-hover:scale-100">
@@ -102,6 +99,7 @@ const Sidebar = () => {
                             width={40}
                             height={40}
                             username={user}
+                            isOnline={true}
                         />
                     </button>
                 </div>
@@ -170,6 +168,7 @@ const Sidebar = () => {
                                                 username={item.name}
                                                 width={40}
                                                 height={40}
+                                                isOnline={true}
                                             />
                                         </div>
                                         <div>

@@ -11,14 +11,14 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import {selectorUser} from "../redux/selectors";
 import AllUserContext from "../context/AllUserContext";
-import {isBase64, decodeFromBase64, encodeToBase64} from "../utils/base64";
+import {decodeFromBase64, encodeToBase64, isBase64} from "../utils/base64";
 import EmojiPicker from "./EmojiPicker";
 import {FaImage, FaPlus, FaVideo} from "react-icons/fa6";
 import uploadFile from "../utils/uploadFile";
 import Loading from "./Loading";
-import { playNotificationEffect, showTitleNotification } from "../utils/notify"
+import {playNotificationEffect, showTitleNotification} from "../utils/notify"
 import {useTranslation} from "react-i18next";
-import { IoInformationCircle } from "react-icons/io5";
+import {IoInformationCircle} from "react-icons/io5";
 import InfoGroupPopup from "./InfoGroupPopup";
 
 const tz = 'Asia/Ho_Chi_Minh';
@@ -35,9 +35,9 @@ const MessagePage = () => {
     const [message, setMessage] = useState("");
     const currentMessage = useRef(null);
     const {allUser, setAllUser} = useContext(AllUserContext);
-    const [openImageVideoUpload,setOpenImageVideoUpload] = useState(false);
-    const [loading,setLoading] = useState(false);
-    const [position,setPosition] = useState([]);
+    const [openImageVideoUpload, setOpenImageVideoUpload] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [position, setPosition] = useState([]);
     const [openInfoPopup, setOpenInfoPopup] = useState(false);
     const [infoGroup, setInfoGroup] = useState({
         name: "",
@@ -46,52 +46,31 @@ const MessagePage = () => {
     });
     const uploadImageVideoRef = useRef();
     const plusIconRef = useRef();
-    const { t } = useTranslation();
+    const {t} = useTranslation();
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const messageContainer = useRef(null);
     const getAllMessage = () => {
-        const data = {
-            "action": "onchat",
-            "data": {
-                "event": params.type === "group" ? "GET_ROOM_CHAT_MES" : "GET_PEOPLE_CHAT_MES",
-                "data": {
-                    "name": params.username,
-                    "page": 1
-                }
-            }
-        };
-        websocketService.send(data);
-        websocketService.socket.onmessage = (message) => {
-            const response = JSON.parse(message.data);
-            console.log('getAll method', response)
+        const messageCallback = (response) => {
+            console.log('getAll method', response);
             if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success') {
                 setAllMessage(response.data.reverse());
+                websocketService.off("GET_PEOPLE_CHAT_MES", messageCallback);
             }
 
             if (response.event === 'GET_ROOM_CHAT_MES' && response.status === 'success') {
                 setAllMessage(response.data.chatData.reverse());
-                setInfoGroup(infoGroup => {
-                    return {
-                        ...infoGroup,
-                        name: response.data.name,
-                        owner: response.data.own,
-                        userList: response.data.userList
-                    }
-                })
-            }
-
-            if (response.event === 'SEND_CHAT' && response.status === 'success') {
-                if (response.data.name === params.username || response.data.to === params.username)
-                    handleUpdateMessage()
-                playNotificationEffect()
-                showTitleNotification()
-                updateUserList(response.data.type === 1 ? response.data.to : response.data.name, response.data.type, now.format('YYYY-MM-DD HH:mm:ss'), true)
+                setInfoGroup((infoGroup) => ({
+                    ...infoGroup,
+                    name: response.data.name,
+                    owner: response.data.own,
+                    userList: response.data.userList,
+                }));
+                websocketService.off("GET_ROOM_CHAT_MES", messageCallback);
             }
         };
-    }
-
-    const handleUpdateMessage = () => {
+        websocketService.on("GET_PEOPLE_CHAT_MES", messageCallback);
+        websocketService.on("GET_ROOM_CHAT_MES", messageCallback);
         const data = {
             "action": "onchat",
             "data": {
@@ -103,26 +82,36 @@ const MessagePage = () => {
             }
         };
         websocketService.send(data);
+    }
 
-        websocketService.socket.onmessage = (message) => {
-            const response = JSON.parse(message.data)
+    const handleUpdateMessage = () => {
+        const updateMessageCallback = (response) => {
             console.log('update mess method', response);
-            if (response.event === 'SEND_CHAT' && response.status === 'success') {
-                if (response.data.name === params.username || response.data.to === params.username)
-                    handleUpdateMessage()
-                playNotificationEffect()
-                showTitleNotification()
-                updateUserList(response.data.type === 1 ? response.data.to : response.data.name, response.data.type, now.format('YYYY-MM-DD HH:mm:ss'), true)
-            }
-            if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success'){
+            if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success') {
                 console.log('cap nhat tin nhan')
                 setAllMessage((allMessage) => [...allMessage, response.data[0]]);
+                websocketService.off("GET_PEOPLE_CHAT_MES", updateMessageCallback);
             }
-            if (response.event === 'GET_ROOM_CHAT_MES' && response.status === 'success'){
+            if (response.event === 'GET_ROOM_CHAT_MES' && response.status === 'success') {
                 console.log('cap nhat tin nhan group')
                 setAllMessage((allMessage) => [...allMessage, response.data.chatData[0]]);
+                websocketService.off("GET_ROOM_CHAT_MES", updateMessageCallback);
             }
         };
+
+        websocketService.on("GET_PEOPLE_CHAT_MES", updateMessageCallback);
+        websocketService.on("GET_ROOM_CHAT_MES", updateMessageCallback);
+        const data = {
+            "action": "onchat",
+            "data": {
+                "event": params.type === "group" ? "GET_ROOM_CHAT_MES" : "GET_PEOPLE_CHAT_MES",
+                "data": {
+                    "name": params.username,
+                    "page": 1
+                }
+            }
+        };
+        websocketService.send(data);
     }
 
     const updateUserList = (username, type, time, isReceiver) => {
@@ -140,23 +129,19 @@ const MessagePage = () => {
                     "data": {
                         "type": params.type === "group" ? "room" : "people",
                         "to": params.username,
-                        // "mes": encodeToBase64(message)
-                        "mes": message
+                        "mes": encodeToBase64(message)
+                        // "mes": message
                     }
                 }
             };
             websocketService.send(messageData);
-            websocketService.socket.onmessage = (message) => {
-                const response = JSON.parse(message.data)
-                console.log('send res', response)
-            };
             handleUpdateMessage();
             updateUserList(params.username, params.type === "group" ? "1" : "0", now.format('YYYY-MM-DD HH:mm:ss'), false)
             setMessage("");
         }
     }
 
-    const handleUploadFile = async(e)=>{
+    const handleUploadFile = async (e) => {
         const file = e.target.files[0];
         console.log('upfile', file)
 
@@ -182,6 +167,25 @@ const MessagePage = () => {
             handleUpdateMessage();
         }
     }
+
+    useEffect(() => {
+        const handleSendChat = (response) => {
+            if (response.event === 'SEND_CHAT' && response.status === 'success') {
+                if (response.data.name === params.username || response.data.to === params.username)
+                    handleUpdateMessage()
+                playNotificationEffect()
+                showTitleNotification()
+                console.log('recireve')
+                updateUserList(response.data.type === 1 ? response.data.to : response.data.name, response.data.type, now.format('YYYY-MM-DD HH:mm:ss'), true)
+            }
+        };
+
+        websocketService.on('SEND_CHAT', handleSendChat);
+
+        return () => {
+            websocketService.off('SEND_CHAT', handleSendChat);
+        };
+    });
 
     const isFileUrl = (url) => {
         return url.startsWith('http://res.cloudinary.com/dkexnsrcg') || url.startsWith('https://res.cloudinary.com/dkexnsrcg');
@@ -230,15 +234,34 @@ const MessagePage = () => {
     }, [allMessage])
 
     useEffect(() => {
-       const handleClickOutside = (e) => {
-           if (uploadImageVideoRef.current && !uploadImageVideoRef.current.contains(e.target) && !plusIconRef.current.contains(e.target)){
-               setOpenImageVideoUpload(false)
-           }
-       }
-       document.addEventListener('mousedown',handleClickOutside);
+        const handleClickOutside = (e) => {
+            if (uploadImageVideoRef.current && !uploadImageVideoRef.current.contains(e.target) && !plusIconRef.current.contains(e.target)) {
+                setOpenImageVideoUpload(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
     });
 
     const getMessages = (pageNum, username) => {
+        const messageMoreCallback = (response) => {
+            console.log('getAll method', response);
+            if (response.event === 'GET_PEOPLE_CHAT_MES' && response.status === 'success') {
+                if (response.data.length === 0)
+                    setHasMore(false);
+                else
+                    setAllMessage(prevMessages => [...response.data.reverse(), ...prevMessages]);
+                websocketService.off("GET_PEOPLE_CHAT_MES", messageMoreCallback);
+            }
+            if (response.event === 'GET_ROOM_CHAT_MES' && response.status === 'success') {
+                if (response.data.chatData.length === 0)
+                    setHasMore(false);
+                else
+                    setAllMessage(prevMessages => [...response.data.chatData.reverse(), ...prevMessages]);
+                websocketService.off("GET_ROOM_CHAT_MES", messageMoreCallback);
+            }
+        };
+        websocketService.on("GET_PEOPLE_CHAT_MES", messageMoreCallback);
+        websocketService.on("GET_ROOM_CHAT_MES", messageMoreCallback);
         const data = {
             "action": "onchat",
             "data": {
@@ -250,19 +273,7 @@ const MessagePage = () => {
             }
         };
         websocketService.send(data);
-        websocketService.socket.onmessage = (message) => {
-            console.log('load new message', data)
-            const response = JSON.parse(message.data);
-            if (response.status === 'success') {
-                const newMessages = params.type === "group" ? response.data.chatData : response.data;
-                if (newMessages.length === 0) {
-                    setHasMore(false);
-                } else {
-                    setAllMessage(prevMessages => [...newMessages.reverse(), ...prevMessages]);
-                }
-            }
-            setLoading(false);
-        };
+        setLoading(false);
     };
 
     const loadMoreMessages = useCallback(() => {
@@ -278,7 +289,8 @@ const MessagePage = () => {
     const handleScroll = () => {
         if (messageContainer.current.scrollTop === 0) {
             console.log('scroll top')
-        };
+        }
+
         if (messageContainer.current.scrollTop === 0 && hasMore && !loading) {
             loadMoreMessages();
             console.log('dinh', page)
@@ -369,7 +381,7 @@ const MessagePage = () => {
 
                 {
                     params.type === 'group' && (
-                        <div >
+                        <div>
                             <button
                                 onClick={() => setOpenInfoPopup(true)}
                                 className='cursor-pointer text-btnColor rounded-full hover:bg-slate-200 p-2'>
@@ -484,7 +496,7 @@ const MessagePage = () => {
                             <label htmlFor='uploadVideo'>
                                 <div
                                     className='text-btnColor flex justify-center items-center w-8 h-8 rounded-full hover:bg-slate-200 transition-all duration-300 ease-in-out'>
-                                <FaVideo size={20}/>
+                                    <FaVideo size={20}/>
                                 </div>
                             </label>
                             <label htmlFor='uploadImage'>
