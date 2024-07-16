@@ -20,7 +20,7 @@ const Avatar = ({username, width, height, isOnline}) => {
             {
                 username ? (
                     <div style={{width: width + "px", height: height + "px"}}
-                         className='overflow-hidden rounded-full flex justify-center items-center text-lg bg-slate-200'>
+                         className='overflow-hidden rounded-full flex justify-center items-center text-lg bg-green-200'>
                         {avatarName}
                     </div>
                 ) : (

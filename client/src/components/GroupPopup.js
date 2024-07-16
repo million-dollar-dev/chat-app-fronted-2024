@@ -2,12 +2,25 @@ import React, { useState } from 'react';
 import websocketService from "../services/websocket";
 import toast from "react-hot-toast";
 import { useNavigate } from 'react-router-dom';
-
+import {useTranslation} from "react-i18next";
 const GroupChatPopup = ({ onClose, isCreateGroup }) => {
     const [groupName, setGroupName] = useState('');
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const handleJoinGroup = () => {
         console.log('edđ')
+        const messageCallback = (response) => {
+            console.log('getAll method', response);
+            if (response.event === 'JOIN_ROOM' && response.status === 'success') {
+                toast.success(t('join_successfully'));
+                navigate('/group/' + groupName.trim())
+            }
+            if (response.event === 'JOIN_ROOM' && response.status === 'error') {
+                toast.error(response.mes);
+            }
+        };
+
+        websocketService.on("JOIN_ROOM", messageCallback);
         websocketService.send({
             "action": "onchat",
             "data": {
@@ -17,22 +30,23 @@ const GroupChatPopup = ({ onClose, isCreateGroup }) => {
                 }
             }
         })
-        websocketService.socket.onmessage = (message) => {
-            const response = JSON.parse(message.data);
-            console.log(response);
-            if (response.event === 'JOIN_ROOM' && response.status === 'success') {
-                toast.success('Join successfully');
-                navigate('/group/' + groupName.trim())
-            }
-            if (response.event === 'JOIN_ROOM' && response.status === 'error') {
-                toast.error(response.mes);
-            }
-        }
-        
         onClose();
     };
 
     const handleCreateGroup = () => {
+        const messageCallback = (response) => {
+            console.log('getAll method', response);
+            if (response.event === 'CREATE_ROOM' && response.status === 'success') {
+                toast.success(t('create_successfully'));
+                handleJoinGroup(groupName)
+            }
+            if (response.event === 'CREATE_ROOM' && response.status === 'error') {
+                toast.error(response.mes);
+            }
+            websocketService.off("CREATE_ROOM", messageCallback);
+        };
+
+        websocketService.on("CREATE_ROOM", messageCallback);
         websocketService.send({
             "action": "onchat",
             "data": {
@@ -42,17 +56,6 @@ const GroupChatPopup = ({ onClose, isCreateGroup }) => {
                 }
             }
         })
-        websocketService.socket.onmessage = (message) => {
-            const response = JSON.parse(message.data);
-            console.log(response);
-            if (response.event === 'CREATE_ROOM' && response.status === 'success') {
-                toast.success('Create successfully');
-                handleJoinGroup(groupName)
-            }
-            if (response.event === 'CREATE_ROOM' && response.status === 'error') {
-                toast.error(response.mes);
-            }
-        }
         onClose();
     };
 
@@ -61,7 +64,7 @@ const GroupChatPopup = ({ onClose, isCreateGroup }) => {
             <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
                 <div className="flex justify-between items-center border-b pb-2 mb-4">
                     <h3 className="text-xl font-semibold text-center flex-grow">
-                        {isCreateGroup ? 'Create a group chat' : 'Join a group chat'}
+                        {isCreateGroup ? t('create_a_group_chat') : t('join_a_group_chat')}
                     </h3>
                     <button
                         onClick={onClose}
@@ -71,13 +74,13 @@ const GroupChatPopup = ({ onClose, isCreateGroup }) => {
                     </button>
                 </div>
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('name')}</label>
                     <input
                         type="text"
                         value={groupName}
                         onChange={(e) => setGroupName(e.target.value)}
                         className="w-full border border-gray-300 p-2 rounded-lg"
-                        placeholder="My Group"
+                        placeholder={t('my_group')}
                     />
                 </div>
                 <div className="flex justify-center">

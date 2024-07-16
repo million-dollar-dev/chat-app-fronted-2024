@@ -1,23 +1,45 @@
 import React, {useEffect, useState} from 'react';
-import {Outlet, useLocation, useNavigate} from "react-router-dom";
+import {Outlet, useLocation, useNavigate, useParams} from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import logo from "../assets/logo.png"
 import {useSelector} from "react-redux";
-import {selectorUser} from "../redux/selectors";
+import {selectorRecode, selectorUser} from "../redux/selectors";
 import {useTranslation} from "react-i18next";
 import AllUserContext from "../context/AllUserContext";
+import websocketService from "../services/websocket";
 const Home = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const basePath = location.pathname === "/";
     const user = useSelector(selectorUser);
+    const recode = useSelector(selectorRecode);
     const { t } = useTranslation();
     const [allUser, setAllUser] = useState([])
     // auth
     useEffect(() => {
-        if (user == '')
+        if (user === '' && recode === '')
             navigate('/login');
     }, []);
+
+    useEffect(() => {
+        const reLoginCallback = (response) => {
+            if (response.event === 'AUTH' && response.status === 'error' && response.mes === 'User not Login') {
+                if (user && recode) {
+                    websocketService.send({
+                        "action": "onchat",
+                        "data": {
+                            "event": "RE_LOGIN",
+                            "data": {
+                                "user": user,
+                                "code": recode
+                            }
+                        }
+                    })
+                }
+            }
+        };
+        websocketService.on("RE_LOGIN", reLoginCallback);
+    }, [])
 
     return (
         <div className='grid lg: grid-cols-[360px,1fr] h-screen max-h-screen'>

@@ -30,6 +30,16 @@
   "repeat_password": "Repeat Password :",
   "repeat_your_password": "Repeat your password",
   "already_have_account": "Already have account ? ",
-  "Type_here_message": "Type here message..."
-
+  "Type_here_message": "Type here message...",
+  "join_successfully": "Join successfully",
+  "create": "Create",
+  "join": "Join",
+  "name": "Name",
+  "my_group": "My Group",
+  "create_a_group_chat": "Create a group chat",
+  "join_a_group_chat": "Join a group chat",
+  "create_successfully": "Create successfully",
+  "group_information": "Group Information:",
+  "owner": "Owner",
+  "members": "Members: "
 }

@@ -4,6 +4,12 @@ export const setUser = (data) => {
         payload: data
     };
 };
+export const setRecode = (data) => {
+    return {
+        type: 'setRecode',
+        payload: data
+    };
+};
 export const logout = () => {
     return {
         type: 'logout',

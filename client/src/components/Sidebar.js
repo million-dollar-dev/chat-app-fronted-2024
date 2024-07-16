@@ -168,7 +168,7 @@ const Sidebar = () => {
                                                 username={item.name}
                                                 width={40}
                                                 height={40}
-                                                isOnline={true}
+                                                isOnline={false}
                                             />
                                         </div>
                                         <div>
