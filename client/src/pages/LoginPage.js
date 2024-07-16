@@ -4,7 +4,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import toast from "react-hot-toast";
 import websocketService from "../services/websocket";
 import { useDispatch } from "react-redux";
-import {setUser} from "../redux/actions";
+import {setRecode, setUser} from "../redux/actions";
 import {useTranslation} from "react-i18next";
 import eventManager from "../services/eventManager";
 
@@ -31,11 +31,10 @@ const LoginPage = () => {
             }
         };
 
-
-
         const loginCallback = (response) => {
             if (response.status === "success" && response.event === "LOGIN") {
                 dispatch(setUser(username));
+                dispatch(setRecode(response.data.RE_LOGIN_CODE));
                 navigate("/");
                 setUsername("");
                 setPassword("");

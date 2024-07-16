@@ -1,5 +1,6 @@
 const initialState = {
     user: '',
+    recode: ''
 };
 const rootReducer = (state = initialState, action) => {
     console.log(state, action);
@@ -7,12 +8,18 @@ const rootReducer = (state = initialState, action) => {
         case 'setUser':
             return {
                 ...state,
-                user: action.payload
+                user: action.payload,
+            };
+        case 'setRecode':
+            return {
+                ...state,
+                recode: action.payload,
             };
         case 'logout':
             return {
                 ...state,
-                user: action.payload
+                user: "",
+                recode: ""
             }
         default:
             return state;

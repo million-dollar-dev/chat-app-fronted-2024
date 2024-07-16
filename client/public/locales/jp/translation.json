@@ -30,6 +30,17 @@
   "repeat_password": "パスワードを再入力：",
   "repeat_your_password": "パスワードを再入力してください",
   "already_have_account": "すでにアカウントを持っていますか？",
-  "Type_here_message": "ここにメッセージを入力..."
+  "Type_here_message": "ここにメッセージを入力...",
+  "join_successfully": "参加に成功しました",
+  "create": "作成する",
+  "join": "参加する",
+  "name": "名前",
+  "my_group": "私のグループ",
+  "create_a_group_chat": "グループチャットを作成する",
+  "join_a_group_chat": "グループチャットに参加する",
+  "create_successfully": "作成に成功しました",
+  "group_information": "グループ情報：",
+  "owner": "オーナー",
+  "members": "メンバー"
 }
 

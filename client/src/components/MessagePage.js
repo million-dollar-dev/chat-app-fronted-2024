@@ -298,7 +298,6 @@ const MessagePage = () => {
     };
 
     useEffect(() => {
-        console.log('haha, message container', messageContainer.current)
         const container = messageContainer.current;
         if (container) {
             console.log('add scroll event', container)
@@ -353,6 +352,7 @@ const MessagePage = () => {
     }
 
     let prevMesCreateAt;
+    let prevMsgName = allMessage[0]?.name;
     const hasMessage = message.length > 0;
     return (
         <div style={{backgroundImage: `url(${backgroundImage})`}} className='bg-no-repeat bg-cover'>
@@ -400,7 +400,7 @@ const MessagePage = () => {
                 {/*all message show here*/}
                 <div className='flex flex-col gap-2 py-2 mx-2' ref={currentMessage}>
                     {
-                        allMessage.map((msg) => {
+                        allMessage.map((msg, index) => {
                             let showDatetime = false;
                             if (prevMesCreateAt) {
                                 const diffTime = dayjs(msg.createAt).diff(prevMesCreateAt, 'hour', true);
@@ -410,13 +410,27 @@ const MessagePage = () => {
                             }
                             prevMesCreateAt = dayjs.utc(msg.createAt, 'DD/MM/YYYY HH:mm:ss').tz();
                             let newTimeString = dayjs.utc(msg.createAt, 'HH:mm').tz();
-
+                            let showAvatar = prevMsgName !== msg.name;
+                            prevMsgName = msg.name;
                             return (
                                 <>
                                     {showDatetime && <span
                                         className="text-center">{prevMesCreateAt.format('DD/MM/YYYY HH:mm:ss')}</span>}
+                                    {(showAvatar || index == 0) && (
+                                        <div className={`flex items-center mb-2 ${user === msg.name ? "ml-auto" : ""}`}>
+                                            <div className='relative inline-block group '>
+                                                <Avatar
+                                                    username={msg.name}
+                                                    width={40}
+                                                    height={40}
+                                                    className='shadow-lg'
+                                                />
+                                                <div className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${user === msg.name ? "right-full" : "left-full"} text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>{msg.name}</div>
+                                            </div>
+                                        </div>
+                                    )}
                                     <div key={msg.id}
-                                         className={`p1 ${isFileUrl(msg.mes) ? "rounded-lg" : "rounded-xl"} w-fit max-w-[280px] md:max-w-sm lg:max-w-md  ${user === msg.name ? "ml-auto bg-btnColor text-primary" : "bg-white"}`}>
+                                         className={`p1 ${isFileUrl(msg.mes) ? "rounded-lg" : "rounded-xl"} w-fit sm:max-w-sm md:max-w-sm lg:max-w-md  ${user === msg.name ? "ml-auto bg-btnColor text-primary" : "bg-white"}`}>
                                         <div className='relative inline-block group'>
                                             <div className='break-all px-2 py-1'>
                                                 {
@@ -424,7 +438,7 @@ const MessagePage = () => {
                                                 }
                                             </div>
                                             <div
-                                                className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${userChat !== msg.name ? "right-full" : "left-full"} text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>
+                                                className={`hidden absolute mx-1.5 p-1 py-1 rounded-lg top-0 ${user === msg.name ? "right-full" : "left-full"} text-xs bg-black bg-opacity-70 text-white flex items-center justify-center group-hover:block`}>
                                                 {newTimeString.format('HH:mm')}
                                             </div>
                                         </div>
@@ -479,12 +493,14 @@ const MessagePage = () => {
                                                 id='uploadImageExt'
                                                 onChange={handleUploadFile}
                                                 className='hidden'
+                                                accept={"image/*"}
                                             />
                                             <input
                                                 type='file'
                                                 id='uploadVideoExt'
                                                 onChange={handleUploadFile}
                                                 className='hidden'
+                                                accept={"video/*"}
                                             />
                                         </form>
                                     </div>
@@ -510,12 +526,14 @@ const MessagePage = () => {
                                 id='uploadImage'
                                 onChange={handleUploadFile}
                                 className='hidden'
+                                accept={"image/*"}
                             />
                             <input
                                 type='file'
                                 id='uploadVideo'
                                 onChange={handleUploadFile}
                                 className='hidden'
+                                accept={"video/*"}
                             />
                         </form>
                     )}

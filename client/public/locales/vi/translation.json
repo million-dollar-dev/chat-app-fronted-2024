@@ -30,6 +30,16 @@
   "repeat_password": "Nhập lại mật khẩu:",
   "repeat_your_password": "Nhập lại mật khẩu của bạn",
   "already_have_account": "Đã có tài khoản?",
-  "Type_here_message": "Nhập tin nhắn tại đây..."
-
+  "Type_here_message": "Nhập tin nhắn tại đây...",
+  "join_successfully": "Tham gia thành công",
+  "create": "Tạo",
+  "join": "Tham gia",
+  "name": "Tên",
+  "my_group": "Nhóm của tôi",
+  "create_a_group_chat": "Tạo cuộc trò chuyện nhóm",
+  "join_a_group_chat": "Tham gia cuộc trò chuyện nhóm",
+  "create_successfully": "Tạo thành công",
+  "group_information": "Thông tin nhóm:",
+  "owner": "Chủ sở hữu",
+  "members": "Thành viên"
 }
